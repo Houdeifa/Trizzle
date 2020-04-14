@@ -4,6 +4,10 @@ class Ressources:
         Ressources.screenWidth = 0
         Ressources.screenHeight = 0
         Ressources.screen = 0
+        Ressources.Running = True
+        Ressources.selected = -1
+        Ressources.selectedGameObject = 0
+        Ressources.mouseOffset = (0,0)
         self.getColoredUpAndDowns()
         
         

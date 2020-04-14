@@ -11,8 +11,10 @@ class Form:
         self.color = color
         self.boxes = []
         self.size = 0
+        self.boxNumber = (0,0)
         self.movable = True
         self.selected = False
+        self.selectedBox = 0
         self.reseting = True
         
     def boxesDefinition(self):

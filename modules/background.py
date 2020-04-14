@@ -12,11 +12,10 @@ class Background:
         Ressources.Rows = self.rows
         Ressources.Colls = self.colls
         
-        self.width = Ressources.trWidth*self.colls - (self.colls-2)*6
-        self.height = Ressources.trHeight*self.rows - (self.rows-2)*2
+        self.width = Ressources.trXSpace*(self.colls-1) + Ressources.trWidth
+        self.height = Ressources.trYSpace*(self.rows-1) + Ressources.trHeight
         xPos = Ressources.screenWidth/2-self.width/2
         yPos = 2*Ressources.screenHeight/5-self.height/2
-        
         self.pos = (xPos,yPos)
         self.PlayPosS = []
         
@@ -59,4 +58,16 @@ class Background:
         RED = pygame.Color(255, 0, 0) 
         pygame.draw.lines(lines_closed, RED, True, points)
         self.screen.blit(lines_closed, (margins, Ressources.screenHeight-height-margins))
+        
+    def isInGrid(self,pixelPos):
+        normalizedX = pixelPos[0] - self.pos[0]
+        normalizedY = pixelPos[1] - self.pos[1]
+        
+        for j in range(self.rows):
+            for i in range (self.colls):
+                if(Ressources.grid[j][i] != -1):
+                    pos = (normalizedX - Ressources.grid[j][i].pos[0],normalizedY - Ressources.grid[j][i].pos[1])
+                    if(Ressources.grid[j][i].isIN(pos)):
+                        return True
+        return False
         
