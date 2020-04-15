@@ -24,7 +24,6 @@ Ressources.selectedGameObject = 0
 Ressources.mouseOffset = (0,0)
 
 
-
 while Ressources.running:
     mousePos = pygame.mouse.get_pos()
     eventHandler.eventHandel(pygame.event,rend,mousePos)

@@ -28,10 +28,10 @@ class Render(Ressources):
                 self.gameChoices[i].draw()
                 
     def turnFinnished(self):
-        if(not self.SelectionDrawable[0] and not self.SelectionDrawable[1] and not self.SelectionDrawable[2]):
-            return False
-        else:
-            return True
+        for gameObject in self.gameChoices:
+            if(not gameObject.played):
+                return False
+        return True
     
     def calculateOffsets(self,width,height,margins):
         widthOffset = 2*margins
@@ -60,13 +60,13 @@ class Render(Ressources):
             self.gameChoices[i].pos = self.Offsets[i]
     
     def genOptions(self):
+        self.gameChoices = []
         for i in range(3):
             self.gameChoices.append(Form(0,(0,0),0))
         
         colorChoices = [0,1,2,3]
         
         colors = []
-        self.gameChoices[0].generateAlea(colorChoices)
         colors.append(self.gameChoices[0].generateAlea(colorChoices))
         
         colorChoices.remove(colors[0])
@@ -79,10 +79,14 @@ class Render(Ressources):
         self.positionAssign()
                 
     def animations(self):
-        for i in range(3):
+        for i in range(len(self.gameChoices)):
             if(self.gameChoices[i].reseting):
                 if(self.gameChoices[i].restTo(self.Offsets[i],0.07)):
                     self.SelectionDrawable[i] = True
+                    
+        for i in range(len(Ressources.played)):
+            if(Ressources.played[i].playing):
+                Ressources.played[i].playTo(Ressources.played[i].PlayedPos,0.07)
     
     
     

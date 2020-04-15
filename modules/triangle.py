@@ -7,6 +7,9 @@ class Triangle:
         self.color = color
         self.parent = parent
         self.screen = screen
+        self.occupied = False
+        self.destoyed = False
+        self.destoing = False
     
     
     def draw(self,pos=-1):

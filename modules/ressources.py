@@ -6,7 +6,10 @@ class Ressources:
         Ressources.screen = 0
         Ressources.Running = True
         Ressources.selected = -1
+        Ressources.selectedTr = (-1,-1)
+        Ressources.selectedBgTr = (-1,-1)
         Ressources.selectedGameObject = 0
+        Ressources.played = []
         Ressources.mouseOffset = (0,0)
         self.getColoredUpAndDowns()
         
@@ -48,22 +51,23 @@ class Ressources:
         Ressources.down = greyDown
         Ressources.ups = [greenUp , yellowUp, orangeUp, cyonUp]
         Ressources.downs = [greenDown , yellowDown, orangeDown, cyonDown]
-        
+       
     @staticmethod
     def getGameObjectType(type):
         forms = {
-            1 : [[(0,0),(Ressources.trXSpace,0),(2*Ressources.trXSpace,0),(0,Ressources.trYSpace),(Ressources.trXSpace,Ressources.trYSpace),(2*Ressources.trXSpace,Ressources.trYSpace)],[1,0,1,0,1,0],(3*Ressources.trXSpace,2*Ressources.trYSpace)],
-            2 :  [[(0,0),(0,Ressources.trYSpace),(Ressources.trXSpace,Ressources.trYSpace),(2*Ressources.trXSpace,Ressources.trYSpace)],[1,0,1,0],(3*Ressources.trXSpace,2*Ressources.trYSpace)],
-            3 :  [[(0,0),(Ressources.trXSpace,0),(2*Ressources.trXSpace,0)],[0,1,0],(3*Ressources.trXSpace,Ressources.trYSpace)],
-            4 :  [[(0,0),(Ressources.trXSpace,0),(Ressources.trXSpace,Ressources.trYSpace),(2*Ressources.trXSpace,Ressources.trYSpace)],[0,1,0,1],(3*Ressources.trXSpace,2*Ressources.trYSpace)],
-            5 :  [[(Ressources.trXSpace,0),(2*Ressources.trXSpace,0),(0,Ressources.trYSpace),(Ressources.trXSpace,Ressources.trYSpace)],[1,0,1,0],(3*Ressources.trXSpace,2*Ressources.trYSpace)],
-            6 :  [[(Ressources.trXSpace,0),(0,Ressources.trYSpace),(Ressources.trXSpace,Ressources.trYSpace),(0,2*Ressources.trYSpace)],[1,1,0,0],(2*Ressources.trXSpace,3*Ressources.trYSpace)],
-            7 :  [[(0,0),(0,Ressources.trYSpace),(Ressources.trXSpace,Ressources.trYSpace),(Ressources.trXSpace,2*Ressources.trYSpace)],[1,0,1,0],(2*Ressources.trXSpace,3*Ressources.trYSpace)],
-            8 :  [[(0,0),(Ressources.trXSpace,0),(2*Ressources.trXSpace,0)],[1,0,1],(3*Ressources.trXSpace,Ressources.trYSpace)],
-            9 :  [[(0,0),(Ressources.trXSpace,0)],[0,1],(2*Ressources.trXSpace,Ressources.trYSpace)],
-            10 :  [[(0,0),(Ressources.trXSpace,0)],[1,0],(2*Ressources.trXSpace,Ressources.trYSpace)],
-            11 :  [[(0,0),(0,Ressources.trYSpace)],[1,0],(Ressources.trXSpace,2*Ressources.trYSpace)],
-            12 :  [[(0,0)],[0],(Ressources.trXSpace,Ressources.trYSpace)],
-            13 :  [[(0,0)],[1],(Ressources.trXSpace,Ressources.trYSpace)],
+            1 : [[[1,0,1],[0,1,0]],(3*Ressources.trXSpace,2*Ressources.trYSpace)],
+            2 :  [[[1,-1,-1],[0,1,0]],(3*Ressources.trXSpace,2*Ressources.trYSpace)],
+            3 :  [[0,1,0],(3*Ressources.trXSpace,Ressources.trYSpace)],
+            4 :  [[[0,1,-1],[-1,0,1]],(3*Ressources.trXSpace,2*Ressources.trYSpace)],
+            5 :  [[[-1,1,0],[1,0,-1]],(3*Ressources.trXSpace,2*Ressources.trYSpace)],
+            6 :  [[[-1,1],[1,0],[0,-1]],(2*Ressources.trXSpace,3*Ressources.trYSpace)],
+            7 :  [[[1,-1],[0,1],[-1,0]],(2*Ressources.trXSpace,3*Ressources.trYSpace)],
+            8 :  [[1,0,1],(3*Ressources.trXSpace,Ressources.trYSpace)],
+            9 :  [[0,1],(2*Ressources.trXSpace,Ressources.trYSpace)],
+            10 :  [[1,0],(2*Ressources.trXSpace,Ressources.trYSpace)],
+            11 :  [[[1],[0]],(Ressources.trXSpace,2*Ressources.trYSpace)],
+            12 :  [[0],(Ressources.trXSpace,Ressources.trYSpace)],
+            13 :  [[1],(Ressources.trXSpace,Ressources.trYSpace)],
         }
         return forms[type]
+    

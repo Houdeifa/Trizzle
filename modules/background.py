@@ -34,11 +34,9 @@ class Background:
                     pos = (i*Ressources.trXSpace, j*Ressources.trYSpace)
                     tr = Triangle(self,self.screen,(i+j+1)%2,pos)
                     rawGrid.append(tr)
-                    self.PlayPosS.append(pos)
                 else:
                     pos = (-1,-1)
                     rawGrid.append(-1)
-                    self.PlayPosS.append(pos)
             Ressources.grid.append(rawGrid)
     
     def draw(self):
@@ -49,6 +47,9 @@ class Background:
                 if(Ressources.grid[j][i] != -1):
                     Ressources.grid[j][i].draw()
         self.drawOptionsSquare(Ressources.screenWidth - 20,150,10)
+        for form in Ressources.played:
+            if(form.played):
+                form.draw()
     
     def drawOptionsSquare(self,width,height,margins):
         #drawing the square where Object are generated
@@ -68,6 +69,81 @@ class Background:
                 if(Ressources.grid[j][i] != -1):
                     pos = (normalizedX - Ressources.grid[j][i].pos[0],normalizedY - Ressources.grid[j][i].pos[1])
                     if(Ressources.grid[j][i].isIN(pos)):
+                        Ressources.selectedBgTr = (i,j)
                         return True
+        Ressources.selectedBgTr = (-1,-1)
         return False
+    
+    def isPlayable(self,form,plays):
+        if(Ressources.selectedBgTr[0] == -1 and Ressources.selectedBgTr[1] == -1):
+            return False
+        if(Ressources.selectedTr[0] == -1 and Ressources.selectedTr[1] == -1):
+            return False
         
+        boxes = form.boxes
+        xf = Ressources.selectedTr[0]
+        yf = Ressources.selectedTr[1]
+        
+        xg = Ressources.selectedBgTr[0]
+        yg = Ressources.selectedBgTr[1]
+        k = (yg - self.rows/2)
+        if(k < 0 ):
+            k = (k+1)* -1;
+        if(yf == -1):
+            if(boxes[xf].type != Ressources.grid[yg][xg].type):
+                return False
+            dleft = xg - xf
+            dright = (self.colls - xg - 1 - k) + xf + 1
+            if(dleft < k or dright < form.colls):
+                return False
+            for i in range(form.colls): 
+                if(Ressources.grid[yg][dleft+i].occupied):
+                    return False
+                
+            if(plays):
+                for j in range(form.colls):
+                    if(Ressources.grid[yg][dleft+j] != -1):
+                        Ressources.grid[yg][dleft+j].occupied = True
+                xg = xg - xf
+                pos = (xg * Ressources.trXSpace + self.pos[0],yg * Ressources.trYSpace + self.pos[1])
+                form.playTo(pos,0.1)
+                Ressources.played.append(form)
+            return True
+        else:
+            if(boxes[yf][xf].type != Ressources.grid[yg][xg].type):
+                return False
+            dleft = xg - xf
+            
+            dtop = yg - yf
+            
+            ymax = dtop + form.rows - 1
+            xmax = dleft + form.colls - 1
+            if(ymax >= self.rows or xmax >= (self.colls-k) or dleft< 0 or dtop< 0):
+                return False
+            for i in range(form.rows):
+                for j in range(form.colls):
+                    y = dtop+i
+                    x = dleft+j
+                    if(boxes[i][j] != -1 and (Ressources.grid[y][x] == -1 or Ressources.grid[y][x] != -1 and Ressources.grid[y][x].occupied)):
+                        return False
+            if(plays):
+                for i in range(form.rows):
+                    for j in range(form.colls):
+                        y = dtop+i
+                        x = dleft+j
+                        if(Ressources.grid[y][x] != -1 and boxes[i][j] != -1):
+                            Ressources.grid[y][x].occupied = True
+                xg = xg - xf 
+                yg = yg - yf 
+                pos = (xg * Ressources.trXSpace+ self.pos[0],yg * Ressources.trYSpace + self.pos[1])
+                form.playTo(pos,0.1)
+                Ressources.played.append(form)
+            return True
+    
+    def canPlays(self,form):
+        for i in range(self.rows):
+            for j in range(self.colls):
+                if(Ressources.grid[i][j] != -1):
+                    Ressources.selectedTr = (0,0)
+                    Ressources.selectedBgTr = (j,i)
+                    self.isPlayable(form,False)
