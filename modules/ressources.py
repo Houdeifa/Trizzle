@@ -5,12 +5,18 @@ class Ressources:
         Ressources.screenHeight = 0
         Ressources.screen = 0
         Ressources.Running = True
+        Ressources.DestroyedForm = 0
         Ressources.selected = -1
         Ressources.selectedTr = (-1,-1)
         Ressources.selectedBgTr = (-1,-1)
         Ressources.selectedGameObject = 0
         Ressources.played = []
+        Ressources.gridForms = []
+        Ressources.lineToDestroy = [[],[],[]] #cobtains all lines that will be destroyed after cheking all possibilitys
+        Ressources.kOfEveryRow = []
         Ressources.mouseOffset = (0,0)
+        Ressources.animationIndex = 0
+        Ressources.canPlay = True
         self.getColoredUpAndDowns()
         
         

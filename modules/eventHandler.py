@@ -16,8 +16,11 @@ def eventHandel(events,rend,mousePos):
                     rend.gameChoices[i].selected = True
                     Ressources.mouseOffset = (mousePos[0] - rend.Offsets[Ressources.selected][0],mousePos[1] - rend.Offsets[Ressources.selected][1])
             if(rend.bg.isInGrid(mousePos) and Ressources.selected != -1):
-                if(rend.bg.isPlayable(rend.gameChoices[Ressources.selected],True)):
+                if(Ressources.canPlay and rend.bg.isPlayable(rend.gameChoices[Ressources.selected],True)):
+                    rend.bg.DestroyLines(rend.gameChoices[Ressources.selected])
                     Ressources.selected = -1
+                Played = True
+            elif(rend.bg.isInBackground(mousePos)):
                 Played = True
             if(Played == False):
                 if(Ressources.selected != -1):

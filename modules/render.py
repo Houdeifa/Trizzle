@@ -15,7 +15,14 @@ class Render(Ressources):
         self.Offsets = []
         self.gameChoices = []
         self.SelectionDrawable = [True,True,True]
-        self.bg = Background(self.screen,6,11)
+        N = 6
+        M = 11
+        self.bg = Background(self.screen,N,M)
+        for i in range(N):
+            tmp = []
+            for j in range(M):
+                tmp.append(-1)
+            Ressources.gridForms.append(tmp)
         
         
     def background(self):
@@ -28,8 +35,8 @@ class Render(Ressources):
                 self.gameChoices[i].draw()
                 
     def turnFinnished(self):
-        for gameObject in self.gameChoices:
-            if(not gameObject.played):
+        for i in range(len(self.gameChoices)):
+            if(not self.gameChoices[i].played):
                 return False
         return True
     
@@ -67,13 +74,13 @@ class Render(Ressources):
         colorChoices = [0,1,2,3]
         
         colors = []
-        colors.append(self.gameChoices[0].generateAlea(colorChoices))
+        colors.append(self.gameChoices[0].generateAlea(colorChoices,10))
         
         colorChoices.remove(colors[0])
-        colors.append(self.gameChoices[1].generateAlea(colorChoices))
+        colors.append(self.gameChoices[1].generateAlea(colorChoices,12))
         
         colorChoices.remove(colors[1])
-        self.gameChoices[2].generateAlea(colorChoices)
+        self.gameChoices[2].generateAlea(colorChoices,13)
         
         self.calculateOffsets(Ressources.screenWidth - 20,150,10)
         self.positionAssign()
@@ -87,7 +94,8 @@ class Render(Ressources):
         for i in range(len(Ressources.played)):
             if(Ressources.played[i].playing):
                 Ressources.played[i].playTo(Ressources.played[i].PlayedPos,0.07)
-    
+                
+        self.bg.DestAnimation()
     
     
     

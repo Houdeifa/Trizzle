@@ -4,7 +4,7 @@ This project is a  2D puzzle game programmed with pygame, you can play it by lun
 
 # Motivation
 
-I'm making this project to progress my pythons and programmation skills.
+I'm making this project to progress my python and programmation skills.
 
 # Build status
 
@@ -14,9 +14,19 @@ I'm making this project to progress my pythons and programmation skills.
 
 ![Screen1](https://i.ibb.co/pQf5Xr2/screen1.png) ![Screen2](https://i.ibb.co/LNyZBdq/screen2.png)
 
-# Requirement
+# Requirements
 
-Python3 : 
+Windows users : \
+Python3 :
+```
+https://phoenixnap.com/kb/how-to-install-python-3-windows
+```
+Pygame :
+```
+http://www.montefiore.ulg.ac.be/~boigelot/cours/ppi/tuto-w10.pdf
+```
+Windows Ubunto : \
+Python3 :
 ```
 sudo apt intall python3
 ```

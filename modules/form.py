@@ -16,6 +16,7 @@ class Form:
         self.selected = False
         self.played = False
         self.playing = False
+        self.destoyed = False
         self.PlayedPos = ()
         self.selectedBox = 0
         self.reseting = True
@@ -84,14 +85,17 @@ class Form:
             
     def draw(self,pos=-1):
         if(pos != -1):
-            self.pos = pos        
+            self.pos = pos
+        self.destoyed = True
         for i in range(len(self.boxes)):
             if(type(self.boxes[i]) == list):
                 for j in range(len(self.boxes[i])):
-                    if(self.boxes[i][j] != -1):
+                    if(self.boxes[i][j] != -1 and not self.boxes[i][j].destoyed):
                         self.boxes[i][j].draw()
-            else:
+                        self.destoyed = False
+            elif(not self.boxes[i].destoyed):
                 self.boxes[i].draw()
+                self.destoyed = False
             
                     
     def generateAlea(self,corlorRange=range(4),type = -1):

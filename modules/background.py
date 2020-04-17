@@ -11,6 +11,13 @@ class Background:
         self.colls = self.colls - self.colls%2 + 1
         Ressources.Rows = self.rows
         Ressources.Colls = self.colls
+        M = 6
+        for i in range(self.rows):
+            Ressources.lineToDestroy[0].append(-1)
+            
+        for i in range(M):
+            Ressources.lineToDestroy[1].append(-1)
+            Ressources.lineToDestroy[2].append(-1)
         
         self.width = Ressources.trXSpace*(self.colls-1) + Ressources.trWidth
         self.height = Ressources.trYSpace*(self.rows-1) + Ressources.trHeight
@@ -27,7 +34,8 @@ class Background:
         for j in range(self.rows):
             k = (j - self.rows/2)
             if(k < 0 ):
-                 k = (k+1)* -1;
+                 k = (k+1)* -1
+            Ressources.kOfEveryRow.append(int(k))
             rawGrid = []
             for i in range (self.colls):
                 if(i >= k and i < (self.colls-k)):
@@ -47,9 +55,12 @@ class Background:
                 if(Ressources.grid[j][i] != -1):
                     Ressources.grid[j][i].draw()
         self.drawOptionsSquare(Ressources.screenWidth - 20,150,10)
+        
         for form in Ressources.played:
-            if(form.played):
+            if(form.played and not form.destoyed):
                 form.draw()
+            elif(form.destoyed):
+                 Ressources.played.remove(form)
     
     def drawOptionsSquare(self,width,height,margins):
         #drawing the square where Object are generated
@@ -73,6 +84,15 @@ class Background:
                         return True
         Ressources.selectedBgTr = (-1,-1)
         return False
+    def isInBackground(self,pixelPos):
+        y = (pixelPos[1] - self.pos[1]) // Ressources.trYSpace
+        x = (pixelPos[0] - self.pos[0]) // Ressources.trXSpace
+        k = (y - self.rows/2)
+        if(k < 0 ):
+            k = (k+1)* -1
+        if(x >= k and x < (self.colls-k) and y >= 0 and y < self.rows):
+            return True
+        return False
     
     def isPlayable(self,form,plays):
         if(Ressources.selectedBgTr[0] == -1 and Ressources.selectedBgTr[1] == -1):
@@ -86,9 +106,7 @@ class Background:
         
         xg = Ressources.selectedBgTr[0]
         yg = Ressources.selectedBgTr[1]
-        k = (yg - self.rows/2)
-        if(k < 0 ):
-            k = (k+1)* -1;
+        k = Ressources.kOfEveryRow[yg]
         if(yf == -1):
             if(boxes[xf].type != Ressources.grid[yg][xg].type):
                 return False
@@ -103,6 +121,7 @@ class Background:
             if(plays):
                 for j in range(form.colls):
                     if(Ressources.grid[yg][dleft+j] != -1):
+                        Ressources.gridForms[yg][dleft+j] = boxes[j]
                         Ressources.grid[yg][dleft+j].occupied = True
                 xg = xg - xf
                 pos = (xg * Ressources.trXSpace + self.pos[0],yg * Ressources.trYSpace + self.pos[1])
@@ -118,7 +137,8 @@ class Background:
             
             ymax = dtop + form.rows - 1
             xmax = dleft + form.colls - 1
-            if(ymax >= self.rows or xmax >= (self.colls-k) or dleft< 0 or dtop< 0):
+            
+            if(ymax >= self.rows or xmax >= self.colls or dleft< 0 or dtop< 0):
                 return False
             for i in range(form.rows):
                 for j in range(form.colls):
@@ -132,6 +152,7 @@ class Background:
                         y = dtop+i
                         x = dleft+j
                         if(Ressources.grid[y][x] != -1 and boxes[i][j] != -1):
+                            Ressources.gridForms[y][x] = boxes[i][j]
                             Ressources.grid[y][x].occupied = True
                 xg = xg - xf 
                 yg = yg - yf 
@@ -147,3 +168,239 @@ class Background:
                     Ressources.selectedTr = (0,0)
                     Ressources.selectedBgTr = (j,i)
                     self.isPlayable(form,False)
+                    
+    def checkToDestroyIn(self,pos):
+        xi = pos[0]
+        yi = pos[1]
+        DestroyColl = True
+        DestroySlash = True
+        DestroyBackSlash = True
+        
+        #0 : row 
+        k = Ressources.kOfEveryRow[yi]
+        width = int(self.colls - 2*k)
+        for i in range(width):
+            if(Ressources.gridForms[yi][k+i] == -1):
+                DestroyColl = False
+                break
+        LineIndex = yi
+        if(DestroyColl and Ressources.lineToDestroy[0][LineIndex] == -1):
+            Ressources.lineToDestroy[0][LineIndex] = pos
+        
+        #1 : a slash /
+        dx = max(xi , self.colls - xi)
+        dy = max(yi , self.rows - yi)
+        trType = Ressources.grid[yi][xi].type
+        if(trType == 0):
+            offset = -1
+        else:
+            offset = 1
+        M = max(dx,dy)
+        for i in range(M):
+            x1 = xi + i
+            y1 = yi - i
+            x2 = xi - i
+            y2 = yi + i
+            x1p = x1 + offset
+            x2p = x2 + offset
+            if(x1 < self.colls and y1 >= 0 and Ressources.grid[y1][x1] != -1 and Ressources.gridForms[y1][x1] == -1):
+                DestroySlash = False
+                break
+            if(x1p < self.colls and x1p >= 0 and y1 >= 0 and Ressources.grid[y1][x1p] != -1 and Ressources.gridForms[y1][x1p] == -1):
+                DestroySlash = False
+                break
+            if(x2 >= 0 and y2 < self.rows and Ressources.grid[y2][x2] != -1 and Ressources.gridForms[y2][x2] == -1):
+                DestroySlash = False
+                break
+            if(x2p >= 0 and x2p < self.colls and y2 < self.rows and Ressources.grid[y2][x2p] != -1 and Ressources.gridForms[y2][x2p] == -1):
+                DestroySlash = False
+                break
+        offset = (trType + 1)%2
+        xIndex = xi - offset
+        xIndex = self.colls - xIndex
+        LineIndex = xIndex - yi + 1
+        LineIndex = (10 - LineIndex)/2
+        LineIndex = int(LineIndex)
+        if(DestroySlash and Ressources.lineToDestroy[1][LineIndex] == -1):
+            Ressources.lineToDestroy[1][LineIndex] = pos
+            
+        #2 : a backslash \
+        
+        if(trType == 0):
+            offset = 1
+        else:
+            offset = -1
+        M = max(dx,dy)
+        for i in range(M):
+            x1 = xi + i
+            x2 = xi - i
+            y1 = yi + i
+            y2 = yi - i
+            x1p = x1 + offset
+            x2p = x2 + offset
+            if(x1 < self.colls and y1 < self.rows and Ressources.grid[y1][x1] != -1 and Ressources.gridForms[y1][x1] == -1):
+                DestroyBackSlash = False
+                break
+            if(x1p < self.colls and x1p >= 0 and y1 < self.rows and Ressources.grid[y1][x1p] != -1 and Ressources.gridForms[y1][x1p] == -1):
+                DestroyBackSlash = False
+                break
+            if(x2 >= 0 and y2 >= 0 and Ressources.grid[y2][x2] != -1 and Ressources.gridForms[y2][x2] == -1):
+                DestroyBackSlash = False
+                break
+            if(x2p >= 0 and x2p < self.colls and y2 >= 0 and Ressources.grid[y2][x2p] != -1 and Ressources.gridForms[y2][x2p] == -1):
+                DestroyBackSlash = False
+                break
+        offset = (trType + 1)%2        
+        yIndex = yi - offset 
+        LineIndex = (xi - yIndex)/2 + 1
+        LineIndex = int(LineIndex)
+        if(DestroyBackSlash and Ressources.lineToDestroy[2][LineIndex] == -1):
+            Ressources.lineToDestroy[2][LineIndex] = pos
+            
+        if(DestroyColl or DestroySlash or DestroyBackSlash):
+            Ressources.canPlay = False
+        
+                    
+    def DestroyLines(self,form):
+        xf = Ressources.selectedTr[0]
+        yf = Ressources.selectedTr[1]
+        
+        xg = Ressources.selectedBgTr[0]
+        yg = Ressources.selectedBgTr[1]
+        
+        x = xg - xf
+        y = yg - yf - 1
+        for i in range(form.rows):
+            for j in range(form.colls):
+                xi = x+j
+                yi = y+i
+                if(xi < self.colls and yi < self.rows and xi >= 0 and yi >= 0):
+                    pos = (xi,yi)
+                    self.checkToDestroyIn(pos)
+        Ressources.DestroyedForm = form
+    def DestAnimation(self):
+        x1 = 0
+        x2 = 0
+        y1 = 0
+        y2 = 0
+        i = Ressources.animationIndex / 100
+        AnimationActivated = False
+        #rows
+        for j in range(len(Ressources.lineToDestroy[0])):
+            if(Ressources.lineToDestroy[0][j] != -1):
+                AnimationActivated = True
+                if(int(i) == i):
+                    i = int(i)
+                    x = Ressources.lineToDestroy[0][j][0]
+                    y = Ressources.lineToDestroy[0][j][1]
+                    x1 = x - i
+                    x2 = x + i
+                    if(x1 >= 0 and Ressources.gridForms[y][x1] != -1):
+                        Ressources.gridForms[y][x1].destoy()
+                        Ressources.grid[y][x1].occupied = False
+                        Ressources.gridForms[y][x1] = -1
+                    if(x2 < self.colls and Ressources.gridForms[y][x2] != -1):
+                        Ressources.gridForms[y][x2].destoy()
+                        Ressources.grid[y][x2].occupied = False
+                        Ressources.gridForms[y][x2] = -1
+                    if(x1 < 0 and x2 >= self.colls and i >= self.colls):
+                        Ressources.lineToDestroy[0][j] = -1
+        #slash
+        for j in range(len(Ressources.lineToDestroy[1])):
+            if(Ressources.lineToDestroy[1][j] != -1):
+                AnimationActivated = True
+                if(int(i) == i):
+                    i = int(i)
+                    x = Ressources.lineToDestroy[1][j][0]
+                    y = Ressources.lineToDestroy[1][j][1]
+                    trType = Ressources.grid[y][x].type
+                    x1 = x + i
+                    y1 = y - i
+                    x2 = x - i
+                    y2 = y + i
+                    if(trType == 0):
+                        offset = -1
+                    else:
+                        offset = 1
+                    x1p = x1 + offset
+                    x2p = x2 + offset
+                    DidSomthing = False
+                    if(x1 < self.colls and y1 >= 0 and Ressources.grid[y1][x1] != -1 and Ressources.gridForms[y1][x1] != -1):
+                        DidSomthing = True
+                        Ressources.gridForms[y1][x1].destoy()
+                        Ressources.grid[y1][x1].occupied = False
+                        Ressources.gridForms[y1][x1] = -1
+                        
+                    if(x1p < self.colls and x1p >= 0 and y1 >= 0 and Ressources.grid[y1][x1p] != -1 and Ressources.gridForms[y1][x1p] != -1):
+                        DidSomthing = True
+                        Ressources.gridForms[y1][x1p].destoy()
+                        Ressources.grid[y1][x1p].occupied = False
+                        Ressources.gridForms[y1][x1p] = -1
+                        
+                    if(x2 >= 0 and y2 < self.rows and Ressources.grid[y2][x2] != -1 and Ressources.gridForms[y2][x2] != -1):
+                        DidSomthing = True
+                        Ressources.gridForms[y2][x2].destoy()
+                        Ressources.grid[y2][x2].occupied = False
+                        Ressources.gridForms[y2][x2] = -1
+                        
+                    if(x2p >= 0 and x2p < self.colls and y2 < self.rows and Ressources.grid[y2][x2p] != -1 and Ressources.gridForms[y2][x2p] != -1):
+                        DidSomthing = True
+                        Ressources.gridForms[y2][x2p].destoy()
+                        Ressources.grid[y2][x2p].occupied = False
+                        Ressources.gridForms[y2][x2p] = -1
+                    if(not DidSomthing and i >= self.colls):
+                        Ressources.lineToDestroy[1][j] = -1
+                        
+        #backslash
+        for j in range(len(Ressources.lineToDestroy[2])):
+            if(Ressources.lineToDestroy[2][j] != -1):
+                AnimationActivated = True
+                if(int(i) == i):
+                    i = int(i)
+                    x = Ressources.lineToDestroy[2][j][0]
+                    y = Ressources.lineToDestroy[2][j][1]
+                    trType = Ressources.grid[y][x].type
+                    x1 = x + i
+                    x2 = x - i
+                    y1 = y + i
+                    y2 = y - i
+                    if(trType == 0):
+                        offset = 1
+                    else:
+                        offset = -1
+                    x1p = x1 + offset
+                    x2p = x2 + offset
+                    DidSomthing = False
+                    if(x1 < self.colls and y1 < self.rows and Ressources.grid[y1][x1] != -1 and Ressources.gridForms[y1][x1] != -1):
+                        DidSomthing = True
+                        Ressources.gridForms[y1][x1].destoy()
+                        Ressources.grid[y1][x1].occupied = False
+                        Ressources.gridForms[y1][x1] = -1
+                        
+                    if(x1p < self.colls and x1p >= 0 and y1 < self.rows and Ressources.grid[y1][x1p] != -1 and Ressources.gridForms[y1][x1p] != -1):
+                        DidSomthing = True
+                        Ressources.gridForms[y1][x1p].destoy()
+                        Ressources.grid[y1][x1p].occupied = False
+                        Ressources.gridForms[y1][x1p] = -1
+                        
+                    if(x2 >= 0 and y2 >= 0 and Ressources.grid[y2][x2] != -1 and Ressources.gridForms[y2][x2] != -1):
+                        DidSomthing = True
+                        Ressources.gridForms[y2][x2].destoy()
+                        Ressources.grid[y2][x2].occupied = False
+                        Ressources.gridForms[y2][x2] = -1
+                        
+                    if(x2p >= 0 and x2p < self.colls and y2 >= 0 and Ressources.grid[y2][x2p] != -1 and Ressources.gridForms[y2][x2p] != -1):
+                        DidSomthing = True
+                        Ressources.gridForms[y2][x2p].destoy()
+                        Ressources.grid[y2][x2p].occupied = False
+                        Ressources.gridForms[y2][x2p] = -1
+                    if(not DidSomthing and i >= self.colls):
+                        Ressources.lineToDestroy[2][j] = -1
+                        
+        if(AnimationActivated):
+            Ressources.animationIndex = Ressources.animationIndex + 5
+            if(i >= self.colls):
+                Ressources.animationIndex = 0
+                Ressources.DestroyedForm.played = True
+                Ressources.canPlay = True
+                

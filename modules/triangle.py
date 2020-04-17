@@ -9,7 +9,6 @@ class Triangle:
         self.screen = screen
         self.occupied = False
         self.destoyed = False
-        self.destoing = False
     
     
     def draw(self,pos=-1):
@@ -45,4 +44,7 @@ class Triangle:
                     return False
         else:
             return False
+    def destoy(self):
+        self.destoyed = True
+        self.occupied = False
             
