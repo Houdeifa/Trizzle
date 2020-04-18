@@ -16,7 +16,11 @@ class Ressources:
         Ressources.kOfEveryRow = []
         Ressources.mouseOffset = (0,0)
         Ressources.animationIndex = 0
+        Ressources.mode = 0
         Ressources.canPlay = True
+        Ressources.playedSound = pygame.mixer.Sound("assets/sounds/played.wav")
+        Ressources.returnedSound = pygame.mixer.Sound("assets/sounds/returned.wav")
+        Ressources.destroyedSound = pygame.mixer.Sound("assets/sounds/blows.wav")
         self.getColoredUpAndDowns()
         
         
@@ -57,6 +61,7 @@ class Ressources:
         Ressources.down = greyDown
         Ressources.ups = [greenUp , yellowUp, orangeUp, cyonUp]
         Ressources.downs = [greenDown , yellowDown, orangeDown, cyonDown]
+        Ressources.mouseOver = False
        
     @staticmethod
     def getGameObjectType(type):

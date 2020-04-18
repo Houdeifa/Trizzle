@@ -12,7 +12,8 @@ class Form:
         self.boxes = []
         self.size = 0
         self.boxNumber = (0,0)
-        self.movable = True
+        self.mouvable = True
+        self.disabled = False
         self.selected = False
         self.played = False
         self.playing = False
@@ -75,7 +76,7 @@ class Form:
         if(self.pos[0] > (pos[0]-1) and self.pos[0] < (pos[0]+1) and  self.pos[1] > (pos[1]-1) and self.pos[1] < (pos[1]+1) ):
             self.pos = (pos[0],pos[1])
             self.reseting = False
-            self.movable = False
+            self.mouvable = False
             self.playing = False
             self.played = True
             return True
@@ -87,14 +88,19 @@ class Form:
         if(pos != -1):
             self.pos = pos
         self.destoyed = True
+        if(self.disabled):
+            self.mouvable = False
+            opacity = 128
+        else:
+            opacity = -1
         for i in range(len(self.boxes)):
             if(type(self.boxes[i]) == list):
                 for j in range(len(self.boxes[i])):
                     if(self.boxes[i][j] != -1 and not self.boxes[i][j].destoyed):
-                        self.boxes[i][j].draw()
+                        self.boxes[i][j].draw(-1,opacity)
                         self.destoyed = False
             elif(not self.boxes[i].destoyed):
-                self.boxes[i].draw()
+                self.boxes[i].draw(-1,opacity)
                 self.destoyed = False
             
                     

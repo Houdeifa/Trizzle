@@ -4,6 +4,7 @@ import random
 from modules.form import Form
 from modules.background import Background
 from modules.ressources import Ressources
+from modules.chooseMenu import ChooseMenu
 
 class Render(Ressources):
     black = (0,0,0)
@@ -18,6 +19,8 @@ class Render(Ressources):
         N = 6
         M = 11
         self.bg = Background(self.screen,N,M)
+        self.chsMenu = ChooseMenu()
+        Ressources.rend = self
         for i in range(N):
             tmp = []
             for j in range(M):
@@ -27,7 +30,17 @@ class Render(Ressources):
         
     def background(self):
         self.bg.draw()
-                
+        
+    def checkIfLoose(self):
+        Lost = True
+        for i in range(3):
+            if(self.SelectionDrawable[i] and not self.gameChoices[i].played and not self.bg.canPlays(self.gameChoices[i])):
+                self.gameChoices[i].disabled = True
+            else:
+                self.gameChoices[i].disabled = False
+                self.gameChoices[i].mouvable = True
+                Lost = False
+        return Lost 
                           
     def blitOptions(self):
         for i in range(3):
@@ -74,13 +87,13 @@ class Render(Ressources):
         colorChoices = [0,1,2,3]
         
         colors = []
-        colors.append(self.gameChoices[0].generateAlea(colorChoices,10))
+        colors.append(self.gameChoices[0].generateAlea(colorChoices))
         
         colorChoices.remove(colors[0])
-        colors.append(self.gameChoices[1].generateAlea(colorChoices,12))
+        colors.append(self.gameChoices[1].generateAlea(colorChoices))
         
         colorChoices.remove(colors[1])
-        self.gameChoices[2].generateAlea(colorChoices,13)
+        self.gameChoices[2].generateAlea(colorChoices)
         
         self.calculateOffsets(Ressources.screenWidth - 20,150,10)
         self.positionAssign()

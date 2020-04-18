@@ -11,15 +11,20 @@ class Triangle:
         self.destoyed = False
     
     
-    def draw(self,pos=-1):
+    def draw(self,pos=-1,opacity = -1):
         if(pos != -1):
             self.pos = pos
         GTypes = [Ressources.down,Ressources.up]
         getTypes = [Ressources.downs,Ressources.ups]
         if(self.color == -1):
+            img = GTypes[self.type]
             self.screen.blit(GTypes[self.type],(self.pos[0]+self.parent.pos[0],self.pos[1]+self.parent.pos[1]))
         else:
-            self.screen.blit(getTypes[self.type][self.color],(self.pos[0]+self.parent.pos[0],self.pos[1]+self.parent.pos[1]))
+            img = getTypes[self.type][self.color]
+            if(opacity != -1):
+                self.blit_alpha(self.screen,img,(self.pos[0]+self.parent.pos[0],self.pos[1]+self.parent.pos[1]),opacity)
+            else:
+                self.screen.blit(img,(self.pos[0]+self.parent.pos[0],self.pos[1]+self.parent.pos[1]))
     
     def isIN(self,pos):
         NormalizedX = pos[0]
@@ -47,4 +52,13 @@ class Triangle:
     def destoy(self):
         self.destoyed = True
         self.occupied = False
+        
+    def blit_alpha(self,target, source, location, opacity):
+        x = location[0]
+        y = location[1]
+        temp = pygame.Surface((source.get_width(), source.get_height())).convert()
+        temp.blit(target, (-x, -y))
+        temp.blit(source, (0, 0))
+        temp.set_alpha(opacity)        
+        target.blit(temp, location)
             

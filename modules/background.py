@@ -27,7 +27,6 @@ class Background:
         self.PlayPosS = []
         
         self.gridCalculator()
-        self.draw()
     
     def gridCalculator(self):
         Ressources.grid = []
@@ -106,6 +105,7 @@ class Background:
         
         xg = Ressources.selectedBgTr[0]
         yg = Ressources.selectedBgTr[1]
+        
         k = Ressources.kOfEveryRow[yg]
         if(yf == -1):
             if(boxes[xf].type != Ressources.grid[yg][xg].type):
@@ -119,6 +119,7 @@ class Background:
                     return False
                 
             if(plays):
+                Ressources.playedSound.play(loops=0, maxtime=0, fade_ms=0)
                 for j in range(form.colls):
                     if(Ressources.grid[yg][dleft+j] != -1):
                         Ressources.gridForms[yg][dleft+j] = boxes[j]
@@ -129,7 +130,7 @@ class Background:
                 Ressources.played.append(form)
             return True
         else:
-            if(boxes[yf][xf].type != Ressources.grid[yg][xg].type):
+            if(boxes[yf][xf] != -1 and boxes[yf][xf].type != Ressources.grid[yg][xg].type):
                 return False
             dleft = xg - xf
             
@@ -147,6 +148,7 @@ class Background:
                     if(boxes[i][j] != -1 and (Ressources.grid[y][x] == -1 or Ressources.grid[y][x] != -1 and Ressources.grid[y][x].occupied)):
                         return False
             if(plays):
+                Ressources.playedSound.play(loops=0, maxtime=0, fade_ms=0)
                 for i in range(form.rows):
                     for j in range(form.colls):
                         y = dtop+i
@@ -162,12 +164,21 @@ class Background:
             return True
     
     def canPlays(self,form):
+        can = False
+        tmp1 = Ressources.selectedTr
+        tmp2 = Ressources.selectedBgTr
         for i in range(self.rows):
             for j in range(self.colls):
                 if(Ressources.grid[i][j] != -1):
                     Ressources.selectedTr = (0,0)
+                    if(type(form.boxes[0]) != list):
+                        Ressources.selectedTr = (0,-1)
                     Ressources.selectedBgTr = (j,i)
-                    self.isPlayable(form,False)
+                    if(self.isPlayable(form,False)):
+                        can = True
+        Ressources.selectedTr = tmp1
+        Ressources.selectedBgTr = tmp2
+        return can
                     
     def checkToDestroyIn(self,pos):
         xi = pos[0]
@@ -190,7 +201,10 @@ class Background:
         #1 : a slash /
         dx = max(xi , self.colls - xi)
         dy = max(yi , self.rows - yi)
-        trType = Ressources.grid[yi][xi].type
+        if(Ressources.grid[yi][xi] != -1):
+            trType = Ressources.grid[yi][xi].type
+        else:
+            trType = 0
         if(trType == 0):
             offset = -1
         else:
@@ -258,7 +272,9 @@ class Background:
             Ressources.lineToDestroy[2][LineIndex] = pos
             
         if(DestroyColl or DestroySlash or DestroyBackSlash):
+            Ressources.destroyedSound.play(loops=0, maxtime=0, fade_ms=0)
             Ressources.canPlay = False
+            
         
                     
     def DestroyLines(self,form):
@@ -268,15 +284,22 @@ class Background:
         xg = Ressources.selectedBgTr[0]
         yg = Ressources.selectedBgTr[1]
         
+        if(yf == -1):
+            yf = 0
         x = xg - xf
-        y = yg - yf - 1
+        y = yg - yf
         for i in range(form.rows):
             for j in range(form.colls):
                 xi = x+j
                 yi = y+i
                 if(xi < self.colls and yi < self.rows and xi >= 0 and yi >= 0):
-                    pos = (xi,yi)
-                    self.checkToDestroyIn(pos)
+                    if(type(form.boxes[0])==list and form.boxes[i][j] != -1):
+                        pos = (xi,yi)
+                        self.checkToDestroyIn(pos)
+                    elif(type(form.boxes[0])!=list and form.boxes[j] != -1):
+                        pos = (xi,yi)
+                        self.checkToDestroyIn(pos)
+                        
         Ressources.DestroyedForm = form
     def DestAnimation(self):
         x1 = 0
@@ -313,7 +336,9 @@ class Background:
                     i = int(i)
                     x = Ressources.lineToDestroy[1][j][0]
                     y = Ressources.lineToDestroy[1][j][1]
-                    trType = Ressources.grid[y][x].type
+                    trType = 0
+                    if(Ressources.grid[y][x] != -1):
+                        trType = Ressources.grid[y][x].type
                     x1 = x + i
                     y1 = y - i
                     x2 = x - i
@@ -359,7 +384,9 @@ class Background:
                     i = int(i)
                     x = Ressources.lineToDestroy[2][j][0]
                     y = Ressources.lineToDestroy[2][j][1]
-                    trType = Ressources.grid[y][x].type
+                    trType = 0
+                    if(Ressources.grid[y][x] != -1):
+                        trType = Ressources.grid[y][x].type
                     x1 = x + i
                     x2 = x - i
                     y1 = y + i
