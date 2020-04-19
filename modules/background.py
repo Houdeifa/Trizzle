@@ -24,6 +24,8 @@ class Background:
         xPos = Ressources.screenWidth/2-self.width/2
         yPos = 2*Ressources.screenHeight/5-self.height/2
         self.pos = (xPos,yPos)
+        self.scorePos = (Ressources.screenWidth - Ressources.screenWidth/10,Ressources.screenHeight/20)
+        self.font = Ressources.fonts[1]
         self.PlayPosS = []
         
         self.gridCalculator()
@@ -54,13 +56,17 @@ class Background:
                 if(Ressources.grid[j][i] != -1):
                     Ressources.grid[j][i].draw()
         self.drawOptionsSquare(Ressources.screenWidth - 20,150,10)
-        
+        self.printscore()
         for form in Ressources.played:
             if(form.played and not form.destoyed):
                 form.draw()
             elif(form.destoyed):
                  Ressources.played.remove(form)
-    
+    def printscore(self): 
+        color = (255,255,255)
+        text = self.font.render(str(Ressources.score), True, color)
+        self.screen.blit(text,self.scorePos)
+        
     def drawOptionsSquare(self,width,height,margins):
         #drawing the square where Object are generated
         points = [(0 ,0), (width,0), (width, height),(0, height)]
@@ -138,7 +144,6 @@ class Background:
             
             ymax = dtop + form.rows - 1
             xmax = dleft + form.colls - 1
-            
             if(ymax >= self.rows or xmax >= self.colls or dleft< 0 or dtop< 0):
                 return False
             for i in range(form.rows):
@@ -186,6 +191,9 @@ class Background:
         DestroyColl = True
         DestroySlash = True
         DestroyBackSlash = True
+        collScore = 0
+        SlashScore = 1
+        BackSlashScore = 1
         
         #0 : row 
         k = Ressources.kOfEveryRow[yi]
@@ -196,6 +204,7 @@ class Background:
                 break
         LineIndex = yi
         if(DestroyColl and Ressources.lineToDestroy[0][LineIndex] == -1):
+            Ressources.score = Ressources.score + self.colls - 2*k
             Ressources.lineToDestroy[0][LineIndex] = pos
         
         #1 : a slash /
@@ -220,15 +229,24 @@ class Background:
             if(x1 < self.colls and y1 >= 0 and Ressources.grid[y1][x1] != -1 and Ressources.gridForms[y1][x1] == -1):
                 DestroySlash = False
                 break
+            elif( i != 0 and x1 < self.colls and y1 >= 0 and Ressources.grid[y1][x1] != -1 and Ressources.gridForms[y1][x1] != -1):
+                SlashScore = SlashScore +1
             if(x1p < self.colls and x1p >= 0 and y1 >= 0 and Ressources.grid[y1][x1p] != -1 and Ressources.gridForms[y1][x1p] == -1):
                 DestroySlash = False
                 break
+            elif(i != 0 and x1p < self.colls and x1p >= 0 and y1 >= 0 and Ressources.grid[y1][x1p] != -1 and Ressources.gridForms[y1][x1p] != -1):
+                SlashScore = SlashScore +1
             if(x2 >= 0 and y2 < self.rows and Ressources.grid[y2][x2] != -1 and Ressources.gridForms[y2][x2] == -1):
                 DestroySlash = False
                 break
+            elif(i != 0 and x2 >= 0 and y2 < self.rows and Ressources.grid[y2][x2] != -1 and Ressources.gridForms[y2][x2] != -1):
+                SlashScore = SlashScore +1
             if(x2p >= 0 and x2p < self.colls and y2 < self.rows and Ressources.grid[y2][x2p] != -1 and Ressources.gridForms[y2][x2p] == -1):
                 DestroySlash = False
                 break
+            elif(i != 0 and x2p >= 0 and x2p < self.colls and y2 < self.rows and Ressources.grid[y2][x2p] != -1 and Ressources.gridForms[y2][x2p] != -1):
+                SlashScore = SlashScore +1
+            
         offset = (trType + 1)%2
         xIndex = xi - offset
         xIndex = self.colls - xIndex
@@ -236,6 +254,7 @@ class Background:
         LineIndex = (10 - LineIndex)/2
         LineIndex = int(LineIndex)
         if(DestroySlash and Ressources.lineToDestroy[1][LineIndex] == -1):
+            Ressources.score = Ressources.score + SlashScore
             Ressources.lineToDestroy[1][LineIndex] = pos
             
         #2 : a backslash \
@@ -255,20 +274,29 @@ class Background:
             if(x1 < self.colls and y1 < self.rows and Ressources.grid[y1][x1] != -1 and Ressources.gridForms[y1][x1] == -1):
                 DestroyBackSlash = False
                 break
+            elif(i != 0 and x1 < self.colls and y1 < self.rows and Ressources.grid[y1][x1] != -1 and Ressources.gridForms[y1][x1] != -1):
+                BackSlashScore = BackSlashScore + 1
             if(x1p < self.colls and x1p >= 0 and y1 < self.rows and Ressources.grid[y1][x1p] != -1 and Ressources.gridForms[y1][x1p] == -1):
                 DestroyBackSlash = False
                 break
+            elif(i != 0 and x1p < self.colls and x1p >= 0 and y1 < self.rows and Ressources.grid[y1][x1p] != -1 and Ressources.gridForms[y1][x1p] != -1):
+                BackSlashScore = BackSlashScore + 1
             if(x2 >= 0 and y2 >= 0 and Ressources.grid[y2][x2] != -1 and Ressources.gridForms[y2][x2] == -1):
                 DestroyBackSlash = False
                 break
+            elif(i != 0 and x2 >= 0 and y2 >= 0 and Ressources.grid[y2][x2] != -1 and Ressources.gridForms[y2][x2] != -1):
+                BackSlashScore = BackSlashScore + 1
             if(x2p >= 0 and x2p < self.colls and y2 >= 0 and Ressources.grid[y2][x2p] != -1 and Ressources.gridForms[y2][x2p] == -1):
                 DestroyBackSlash = False
                 break
+            elif(i != 0 and x2p >= 0 and x2p < self.colls and y2 >= 0 and Ressources.grid[y2][x2p] != -1 and Ressources.gridForms[y2][x2p] != -1):
+                BackSlashScore = BackSlashScore + 1
         offset = (trType + 1)%2        
         yIndex = yi - offset 
         LineIndex = (xi - yIndex)/2 + 1
         LineIndex = int(LineIndex)
         if(DestroyBackSlash and Ressources.lineToDestroy[2][LineIndex] == -1):
+            Ressources.score = Ressources.score + BackSlashScore
             Ressources.lineToDestroy[2][LineIndex] = pos
             
         if(DestroyColl or DestroySlash or DestroyBackSlash):
@@ -428,6 +456,8 @@ class Background:
             Ressources.animationIndex = Ressources.animationIndex + 5
             if(i >= self.colls):
                 Ressources.animationIndex = 0
-                Ressources.DestroyedForm.played = True
+                if(not Ressources.DestroyedForm.played):
+                    Ressources.score = Ressources.score + Ressources.DestroyedForm.score
+                    Ressources.DestroyedForm.played = True
                 Ressources.canPlay = True
                 

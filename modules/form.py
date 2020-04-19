@@ -23,9 +23,11 @@ class Form:
         self.reseting = True
         self.colls = 0
         self.rows = 0
+        self.score = 0
                     
     def boxesDefinition(self):
         types = Ressources.getGameObjectType(self.type)[0]
+        self.score = Ressources.getGameObjectType(self.type)[2]
         self.boxes = []
         for i in range(len(types)):
             if(type(types[i]) == list):
@@ -79,6 +81,7 @@ class Form:
             self.mouvable = False
             self.playing = False
             self.played = True
+            Ressources.score = Ressources.score + self.score
             return True
         else:
             return False

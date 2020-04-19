@@ -5,6 +5,7 @@ from modules.form import Form
 from modules.background import Background
 from modules.ressources import Ressources
 from modules.chooseMenu import ChooseMenu
+from modules.looseMenu import LooseMenu
 
 class Render(Ressources):
     black = (0,0,0)
@@ -20,6 +21,7 @@ class Render(Ressources):
         M = 11
         self.bg = Background(self.screen,N,M)
         self.chsMenu = ChooseMenu()
+        self.lsMenu = LooseMenu()
         Ressources.rend = self
         for i in range(N):
             tmp = []
@@ -27,7 +29,18 @@ class Render(Ressources):
                 tmp.append(-1)
             Ressources.gridForms.append(tmp)
         
-        
+    def reset(self):
+        N = 6
+        M = 11
+        self.bg = Background(self.screen,N,M)
+        self.SelectionDrawable = [True,True,True]
+        self.gameChoices = []
+        Ressources.gridForms = []
+        for i in range(N):
+            tmp = []
+            for j in range(M):
+                tmp.append(-1)
+            Ressources.gridForms.append(tmp)
     def background(self):
         self.bg.draw()
         
@@ -39,6 +52,8 @@ class Render(Ressources):
             else:
                 self.gameChoices[i].disabled = False
                 self.gameChoices[i].mouvable = True
+        for i in range(3):
+             if(not self.gameChoices[i].played and not self.gameChoices[i].disabled):
                 Lost = False
         return Lost 
                           

@@ -47,4 +47,6 @@ while Ressources.running:
             Ressources.selectedGameObject.draw((mousePos[0]-Ressources.mouseOffset[0],mousePos[1]-Ressources.mouseOffset[1]))
 
         rend.animations()
+    if(Ressources.mode == 2):
+        rend.lsMenu.draw()
 pygame.quit()

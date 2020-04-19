@@ -6,7 +6,7 @@ class ChooseMenu:
         self.buttonWidth = Ressources.screenWidth * 2 // 5
         self.buttonHeight = Ressources.screenHeight // 12
         self.screen = Ressources.screen
-        self.font = pygame.font.Font("assets/fonts/BebasNeue-Regular.ttf", 28)
+        self.font = Ressources.fonts[0]
         self.clickSound = pygame.mixer.Sound("assets/sounds/selected.wav")
         self.mouseOverSound = pygame.mixer.Sound("assets/sounds/Over.wav")
         y = Ressources.screenHeight // 3 - self.buttonHeight // 2

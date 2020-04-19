@@ -24,12 +24,36 @@ def eventHandel(events,rend,mousePos):
                 rend.chsMenu.buttons[i][3] = 0
         if(mouseOver == False):
             Ressources.mouseOver = False
+            
+    elif(Ressources.mode == 2):
+        for event in events.get():
+            if event.type == pygame.QUIT:
+                Ressources.running = False
+                return
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                for i in range(len(rend.lsMenu.buttons)):
+                    if(rend.lsMenu.inButtonBox(mousePos,i)):
+                        rend.lsMenu.buttons[i][6]()
+                        print("true")
+        mouseOver = False
+        for i in range(len(rend.lsMenu.buttons)):
+            if(rend.lsMenu.inButtonBox(mousePos,i)):
+                if(Ressources.mouseOver == False):
+                    rend.chsMenu.mouseOverSound.play()
+                    Ressources.mouseOver = True
+                rend.lsMenu.buttons[i][4] = 1
+                mouseOver = True
+            else:
+                rend.lsMenu.buttons[i][4] = 0
+        if(mouseOver == False):
+            Ressources.mouseOver = False
     
     elif(Ressources.mode == 1):
         for event in events.get():
             if event.type == pygame.QUIT:
                 Ressources.running = False
                 return
+            
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 Played = False
                 for i in range(len(rend.gameChoices)):
@@ -52,7 +76,11 @@ def eventHandel(events,rend,mousePos):
                             Ressources.returnedSound.play()
                             rend.gameChoices[Ressources.selected].reseting = True
                     Ressources.selected = -1
-        Lost = rend.checkIfLoose()
+        
         if(rend.turnFinnished()):
             rend.genOptions()
             rend.blitOptions()
+        Lost = rend.checkIfLoose()
+        if(Lost):
+            rend.lsMenu.reset()
+            Ressources.mode = 2
