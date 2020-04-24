@@ -30,7 +30,15 @@ class Background:
         self.PlayPosS = []
         
         self.gridCalculator()
-    
+    def reset(self):
+        N = Ressources.Rows
+        M = Ressources.Colls
+        Ressources.gridForms = []
+        for i in range(N):
+            tmp = []
+            for j in range(M):
+                tmp.append(-1)
+            Ressources.gridForms.append(tmp)
     def gridCalculator(self):
         Ressources.grid = []
         for j in range(self.rows):
@@ -63,7 +71,7 @@ class Background:
             if(form.played and not form.destoyed):
                 form.draw()
             elif(form.destoyed):
-                 Ressources.played.remove(form)
+                Ressources.played.remove(form)
     def print_score(self): 
         color = (255,255,255)
         text = self.font.render(str(Ressources.score), True, color)
@@ -131,7 +139,7 @@ class Background:
             if(dleft < k or dright < form.colls):
                 return False
             for i in range(form.colls): 
-                if(Ressources.grid[yg][dleft+i].occupied):
+                if(Ressources.gridForms[yg][dleft+i] != -1):
                     return False
                 
             if(plays):
@@ -139,7 +147,6 @@ class Background:
                 for j in range(form.colls):
                     if(Ressources.grid[yg][dleft+j] != -1):
                         Ressources.gridForms[yg][dleft+j] = boxes[j]
-                        Ressources.grid[yg][dleft+j].occupied = True
                 xg = xg - xf
                 pos = (xg * Ressources.trXSpace + self.pos[0],yg * Ressources.trYSpace + self.pos[1])
                 form.playTo(pos,0.1,(xg,yg))
@@ -160,7 +167,7 @@ class Background:
                 for j in range(form.colls):
                     y = dtop+i
                     x = dleft+j
-                    if(boxes[i][j] != -1 and (Ressources.grid[y][x] == -1 or Ressources.grid[y][x] != -1 and Ressources.grid[y][x].occupied)):
+                    if(boxes[i][j] != -1 and (Ressources.grid[y][x] == -1 or Ressources.grid[y][x] != -1 and Ressources.gridForms[y][x] != -1)):
                         return False
             if(plays):
                 Ressources.playedSound.play(loops=0, maxtime=0, fade_ms=0)
@@ -170,7 +177,6 @@ class Background:
                         x = dleft+j
                         if(Ressources.grid[y][x] != -1 and boxes[i][j] != -1):
                             Ressources.gridForms[y][x] = boxes[i][j]
-                            Ressources.grid[y][x].occupied = True
                 xg = xg - xf 
                 yg = yg - yf 
                 pos = (xg * Ressources.trXSpace+ self.pos[0],yg * Ressources.trYSpace + self.pos[1])
@@ -358,11 +364,9 @@ class Background:
                     x2 = x + i
                     if(x1 >= 0 and Ressources.gridForms[y][x1] != -1):
                         Ressources.gridForms[y][x1].destoy()
-                        Ressources.grid[y][x1].occupied = False
                         Ressources.gridForms[y][x1] = -1
                     if(x2 < self.colls and Ressources.gridForms[y][x2] != -1):
                         Ressources.gridForms[y][x2].destoy()
-                        Ressources.grid[y][x2].occupied = False
                         Ressources.gridForms[y][x2] = -1
                     if(x1 < 0 and x2 >= self.colls and i >= self.colls):
                         Ressources.lineToDestroy[0][j] = -1
@@ -391,25 +395,21 @@ class Background:
                     if(x1 < self.colls and y1 >= 0 and Ressources.grid[y1][x1] != -1 and Ressources.gridForms[y1][x1] != -1):
                         DidSomthing = True
                         Ressources.gridForms[y1][x1].destoy()
-                        Ressources.grid[y1][x1].occupied = False
                         Ressources.gridForms[y1][x1] = -1
                         
                     if(x1p < self.colls and x1p >= 0 and y1 >= 0 and Ressources.grid[y1][x1p] != -1 and Ressources.gridForms[y1][x1p] != -1):
                         DidSomthing = True
                         Ressources.gridForms[y1][x1p].destoy()
-                        Ressources.grid[y1][x1p].occupied = False
                         Ressources.gridForms[y1][x1p] = -1
                         
                     if(x2 >= 0 and y2 < self.rows and Ressources.grid[y2][x2] != -1 and Ressources.gridForms[y2][x2] != -1):
                         DidSomthing = True
                         Ressources.gridForms[y2][x2].destoy()
-                        Ressources.grid[y2][x2].occupied = False
                         Ressources.gridForms[y2][x2] = -1
                         
                     if(x2p >= 0 and x2p < self.colls and y2 < self.rows and Ressources.grid[y2][x2p] != -1 and Ressources.gridForms[y2][x2p] != -1):
                         DidSomthing = True
                         Ressources.gridForms[y2][x2p].destoy()
-                        Ressources.grid[y2][x2p].occupied = False
                         Ressources.gridForms[y2][x2p] = -1
                     if(not DidSomthing and i >= self.colls):
                         Ressources.lineToDestroy[1][j] = -1
@@ -439,25 +439,21 @@ class Background:
                     if(x1 < self.colls and y1 < self.rows and Ressources.grid[y1][x1] != -1 and Ressources.gridForms[y1][x1] != -1):
                         DidSomthing = True
                         Ressources.gridForms[y1][x1].destoy()
-                        Ressources.grid[y1][x1].occupied = False
                         Ressources.gridForms[y1][x1] = -1
                         
                     if(x1p < self.colls and x1p >= 0 and y1 < self.rows and Ressources.grid[y1][x1p] != -1 and Ressources.gridForms[y1][x1p] != -1):
                         DidSomthing = True
                         Ressources.gridForms[y1][x1p].destoy()
-                        Ressources.grid[y1][x1p].occupied = False
                         Ressources.gridForms[y1][x1p] = -1
                         
                     if(x2 >= 0 and y2 >= 0 and Ressources.grid[y2][x2] != -1 and Ressources.gridForms[y2][x2] != -1):
                         DidSomthing = True
                         Ressources.gridForms[y2][x2].destoy()
-                        Ressources.grid[y2][x2].occupied = False
                         Ressources.gridForms[y2][x2] = -1
                         
                     if(x2p >= 0 and x2p < self.colls and y2 >= 0 and Ressources.grid[y2][x2p] != -1 and Ressources.gridForms[y2][x2p] != -1):
                         DidSomthing = True
                         Ressources.gridForms[y2][x2p].destoy()
-                        Ressources.grid[y2][x2p].occupied = False
                         Ressources.gridForms[y2][x2p] = -1
                     if(not DidSomthing and i >= self.colls):
                         Ressources.lineToDestroy[2][j] = -1

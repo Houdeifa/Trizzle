@@ -1,16 +1,15 @@
 <?xml version="1.0" ?><configuration>
 	<screen height="500" width="500"/>
-	<saves>
-	<save><playedForm color="0" iPos="(5, 4)" pos="(230.0, 238.5)" type="3"/><choices><choice color="1" played="False" type="12"/><choice color="0" played="True" type="3"/><choice color="3" played="False" type="6"/></choices></save></saves>
+	<saves/>
 	<scores>
-		<score date="00000000" value="0"/>
-		<score date="00000000" value="0"/>
-		<score date="00000000" value="0"/>
-		<score date="00000000" value="0"/>
+		<score date="24042020" value="8"/>
+		<score date="24042020" value="58"/>
+		<score date="24042020" value="58"/>
+		<score date="24042020" value="162"/>
 		<score date="24042020" value="3"/>
-		<score date="24042020" value="28"/>
+		<score date="24042020" value="90"/>
 		<score date="24042020" value="6"/>
-		<score date="24042020" value="12"/>
+		<score date="24042020" value="58"/>
 		<score date="24042020" value="71"/>
 		<score date="24042020" value="6"/>
 	</scores>

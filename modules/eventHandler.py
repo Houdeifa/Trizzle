@@ -78,8 +78,8 @@ def eventHandel(events,rend,mousePos):
                             Ressources.returnedSound.play()
                             rend.gameChoices[Ressources.selected].reseting = True
                     Ressources.selected = -1
-        
-        if(rend.turnFinnished()):
+        turnFinished = rend.turnFinnished()
+        if(turnFinished):
             rend.genOptions()
             rend.blitOptions()
         Lost = rend.checkIfLoose()
@@ -87,3 +87,5 @@ def eventHandel(events,rend,mousePos):
             rend.lsMenu.reset()
             Ressources.mode = 2
             Ressources.canContinue = False
+            Ressources.del_save()
+            rend.chsMenu.buttons[0][3] = 1

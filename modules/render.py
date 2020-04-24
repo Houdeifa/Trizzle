@@ -16,13 +16,10 @@ class Render(Ressources):
         Ressources.screen = screen
         self.Offsets = []
         self.gameChoices = []
-        self.SelectionDrawable = [True,True,True]
         N = 6
         M = 11
         self.bg = Background(self.screen,N,M)
         self.chsMenu = ChooseMenu()
-        if(Ressources.canContinue):
-            self.chsMenu.buttons[0][4] = 0
         self.lsMenu = LooseMenu()
         Ressources.rend = self
         for i in range(N):
@@ -32,10 +29,10 @@ class Render(Ressources):
             Ressources.gridForms.append(tmp)
         
     def reset(self):
-        N = 6
-        M = 11
+        N = Ressources.Rows
+        M = Ressources.Colls
+        
         self.bg = Background(self.screen,N,M)
-        self.SelectionDrawable = [True,True,True]
         self.gameChoices = []
         Ressources.gridForms = []
         for i in range(N):
@@ -49,7 +46,7 @@ class Render(Ressources):
     def checkIfLoose(self):
         Lost = True
         for i in range(3):
-            if(self.SelectionDrawable[i] and not self.gameChoices[i].played and not self.bg.canPlays(self.gameChoices[i])):
+            if(not self.gameChoices[i].selected and not self.gameChoices[i].played and not self.bg.canPlays(self.gameChoices[i])):
                 self.gameChoices[i].disabled = True
             else:
                 self.gameChoices[i].disabled = False
@@ -61,7 +58,7 @@ class Render(Ressources):
                           
     def blitOptions(self):
         for i in range(3):
-            if(self.SelectionDrawable[i]):
+            if(not self.gameChoices[i].selected and not self.gameChoices[i].played):
                 self.gameChoices[i].draw()
                 
     def turnFinnished(self):
@@ -70,7 +67,10 @@ class Render(Ressources):
                 return False
         return True
     
-    def calculateOffsets(self,width,height,margins):
+    def calculateOffsets(self):
+        width = Ressources.screenWidth - 20
+        height = 150
+        margins = 10
         widthOffset = 2*margins
         HieghtOffset = Ressources.screenHeight - margins - height/2
         widthLimit = Ressources.screenWidth-margins
@@ -112,20 +112,93 @@ class Render(Ressources):
         colorChoices.remove(colors[1])
         self.gameChoices[2].generateAlea(colorChoices)
         
-        self.calculateOffsets(Ressources.screenWidth - 20,150,10)
+        self.calculateOffsets()
         self.positionAssign()
                 
     def animations(self):
         for i in range(len(self.gameChoices)):
             if(self.gameChoices[i].reseting):
                 if(self.gameChoices[i].restTo(self.Offsets[i],0.07)):
-                    self.SelectionDrawable[i] = True
+                    self.gameChoices[i].selected = False
                     
         for i in range(len(Ressources.played)):
             if(Ressources.played[i].playing):
                 Ressources.played[i].playTo(Ressources.played[i].PlayedPos,0.07,Ressources.played[i].iPos)
                 
         self.bg.DestAnimation()
+        
+    @staticmethod
+    def getSave():
+        playedForms = Ressources.doc.getElementsByTagName("playedForm")
+        
+        Ressources.played = []
+        Ressources.rend.chsMenu.buttons[0][3] = 0
+        for i in range(len(playedForms)):
+            xPos = playedForms[i].getAttribute("xPos")
+            yPos = playedForms[i].getAttribute("yPos")
+            pos = (float(xPos), float(yPos))
+            color = playedForms[i].getAttribute("color")
+            color = int(color)
+            typeN = playedForms[i].getAttribute("type")
+            typeN = int(typeN)
+            newForm = Form(typeN,pos,color)
+            xPos = int(playedForms[i].getAttribute("jX"))
+            yPos = int(playedForms[i].getAttribute("iY"))
+            newForm.iPos = (xPos,yPos)
+            newForm.played = True
+            newForm.mouvable = False
+            newForm.destoyed = False
+            newForm.boxesDefinition()
+            Ressources.played.append(newForm)
+            distroyedBox = playedForms[i].getElementsByTagName("distroyedBox")
+            
+            for k in range(len(newForm.boxes)):
+                if(type(newForm.boxes[0]) == list):
+                    for l in range(len(newForm.boxes[0])):
+                        Ressources.gridForms[k+yPos][l+xPos] = newForm.boxes[k][l]
+                else:
+                    Ressources.gridForms[yPos][k+xPos] = newForm.boxes[k]
+                    
+                    
+            for j in range(len(distroyedBox)):
+                jPos = int(distroyedBox[j].getAttribute("xPos"))
+                iPos = int(distroyedBox[j].getAttribute("yPos"))
+                if(iPos == -1):
+                    newForm.boxes[jPos].destoyed = True
+                    Ressources.gridForms[yPos][jPos+xPos] = -1
+                else:
+                    newForm.boxes[iPos][jPos].destoyed = True
+                    Ressources.gridForms[iPos+yPos][jPos+xPos] = -1
+                    
+        choices = Ressources.doc.getElementsByTagName("choice")
+        score = Ressources.doc.getElementsByTagName("TheScore")
+        Ressources.score = int(score[0].getAttribute("value"))
+        Ressources.gameChoices = []
+        for i in range(len(choices)):
+            typeN = choices[i].getAttribute("type")
+            played = choices[i].getAttribute("played")
+            typeN = int(typeN)
+            color = choices[i].getAttribute("color")
+            color = int(color)
+            pos = (0,0)
+            newForm = Form(typeN,pos,color)
+            if(played == "True"): 
+                played = True 
+            else: 
+                played = False
+            newForm.played = played
+            newForm.selected = played
+            
+            newForm.destoyed = False
+            newForm.boxesDefinition()
+            Ressources.gameChoices.append(newForm)
+        
+        Ressources.rend.gameChoices = Ressources.gameChoices
+        Ressources.rend.calculateOffsets()
+        for i in range(len(Ressources.gameChoices)):
+            Ressources.gameChoices[i].pos = Ressources.rend.Offsets[i]
+        Ressources.rend.gameChoices = Ressources.gameChoices
+        
     
     
     

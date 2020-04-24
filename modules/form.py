@@ -29,6 +29,7 @@ class Form:
                     
     def boxesDefinition(self):
         types = Ressources.getGameObjectType(self.type)[0]
+        self.size = Ressources.getGameObjectType(self.type)[1]
         self.score = Ressources.getGameObjectType(self.type)[2]
         self.optimalSelectionPos = Ressources.getGameObjectType(self.type)[3]
         self.boxes = []
@@ -118,7 +119,6 @@ class Form:
             self.type = type
         self.color = random.choice(corlorRange)
         self.boxesDefinition()
-        self.size = Ressources.getGameObjectType(self.type)[1]
         return self.color
     
     def isIN(self,pixelPos):

@@ -6,12 +6,13 @@ import modules.eventHandler as eventHandler
 pygame.mixer.pre_init(44100, -16, 2, 512)
 pygame.mixer.init()
 pygame.init()
+Ressources.configFileExists = False
+Ressources.canContinue = False
 Ressources.readConfigFile()
 if(Ressources.configFileExists and Ressources.screenConf != []):
     screenWidth = int(Ressources.screenConf[0].getAttribute("width"))
     screenHeight = int(Ressources.screenConf[0].getAttribute("height"))
     Ressources.getScores()
-    Ressources.getSave()
 else:
     screenWidth = 500
     screenHeight = 500
@@ -25,6 +26,9 @@ Ressources.running = True
 clock = pygame.time.Clock()
 rend = Render(screenWidth,screenHeight,screen)
 
+if(Ressources.canContinue):
+    Render.getSave()
+    
 pygame.display.update()
 
 #----gameVariables
@@ -47,8 +51,8 @@ while Ressources.running:
         rend.background()
         rend.blitOptions()
 
-        if(Ressources.selected != -1 and rend.SelectionDrawable[Ressources.selected] == True):
-            rend.SelectionDrawable[Ressources.selected] = False
+        if(Ressources.selected != -1 and rend.gameChoices[Ressources.selected].selected):
+            rend.gameChoices[Ressources.selected].selected = True
             Ressources.selectedGameObject = rend.gameChoices[Ressources.selected]
         elif(Ressources.selected == -1):
             Ressources.selectedGameObject = 0

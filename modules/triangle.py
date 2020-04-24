@@ -7,7 +7,6 @@ class Triangle:
         self.color = color
         self.parent = parent
         self.screen = screen
-        self.occupied = False
         self.destoyed = False
     
     
@@ -51,7 +50,6 @@ class Triangle:
             return False
     def destoy(self):
         self.destoyed = True
-        self.occupied = False
         
     def blit_alpha(self,target, source, location, opacity):
         x = location[0]

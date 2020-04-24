@@ -41,7 +41,6 @@ class Ressources:
             pygame.image.load('assets/imgs/numbers/9.png').convert_alpha()
         ]
         self.getColoredUpAndDowns()
-        Ressources.canContinue = False
     
     def getColoredUpAndDowns(self):
         greyUp = pygame.image.load('assets/up.png').convert_alpha()
@@ -142,45 +141,55 @@ class Ressources:
             Ressources.saves = doc.getElementsByTagName("save")
             Ressources.scores = doc.getElementsByTagName("score")
             Ressources.screenConf = doc.getElementsByTagName("screen")
+            Ressources.configFileExists = True
             if(len(Ressources.saves) != 0):
                 Ressources.canContinue = True
         except Exception:
             Ressources.configFileExists = False
+            Ressources.canContinue = False
     @staticmethod
     def save(saveGame = True):
         if(saveGame):
             save = Ressources.doc.createElement("save")
+            score = Ressources.doc.createElement("TheScore")
+            save.appendChild(score)
+            score.setAttribute("value", str(Ressources.score))
             for form in Ressources.played:
                 playedForm = Ressources.doc.createElement("playedForm")
                 playedForm.setAttribute("type", str(form.type))
-                playedForm.setAttribute("pos", str(form.pos))
-                playedForm.setAttribute("iPos", str(form.iPos))
+                playedForm.setAttribute("xPos", str(form.pos[0]))
+                playedForm.setAttribute("yPos", str(form.pos[1]))
+                playedForm.setAttribute("jX", str(form.iPos[0]))
+                playedForm.setAttribute("iY", str(form.iPos[1]))
                 playedForm.setAttribute("color", str(form.color))
                 for i in range(len(form.boxes)):
                     if(type(form.boxes[0]) != list and form.boxes[i].destoyed):
                         box = Ressources.doc.createElement("distroyedBox")
-                        box.setAttribute("pos", str((i,-1)))
+                        box.setAttribute("xPos", str(i))
+                        box.setAttribute("yPos", "-1")
                         playedForm.appendChild(box)
                     elif(type(form.boxes[0]) == list):
                         for j in range(len(form.boxes[i])):
                             if(form.boxes[i][j] != -1 and form.boxes[i][j].destoyed):
                                 box = Ressources.doc.createElement("distroyedBox")
-                                box.setAttribute("pos", str((j,i)))
+                                box.setAttribute("xPos", str(j))
+                                box.setAttribute("yPos", str(i))
                                 playedForm.appendChild(box)
                 save.appendChild(playedForm)
-                choices = Ressources.doc.createElement("choices")
-                for i in range(len(Ressources.rend.gameChoices)):
-                    choice = Ressources.doc.createElement("choice")
-                    choice.setAttribute("type", str(Ressources.rend.gameChoices[i].type))
-                    choice.setAttribute("color", str(Ressources.rend.gameChoices[i].color))
-                    choice.setAttribute("played", str(Ressources.rend.gameChoices[i].played))
-                    choices.appendChild(choice)
-                save.appendChild(choices)
+            choices = Ressources.doc.createElement("choices")
+            for i in range(len(Ressources.rend.gameChoices)):
+                choice = Ressources.doc.createElement("choice")
+                choice.setAttribute("type", str(Ressources.rend.gameChoices[i].type))
+                choice.setAttribute("color", str(Ressources.rend.gameChoices[i].color))
+                choice.setAttribute("played", str(Ressources.rend.gameChoices[i].played))
+                choices.appendChild(choice)
+            save.appendChild(choices)
             SavesParent = Ressources.doc.getElementsByTagName("saves")[0]
             oldSaves = SavesParent.getElementsByTagName("save")
             for anySave in oldSaves:
                 SavesParent.removeChild(anySave)
-            SavesParent.appendChild(save)
+            if(len(Ressources.played) != 0):
+                SavesParent.appendChild(save)
             
             
         if(Ressources.score > int(Ressources.minScore["value"])):
@@ -200,6 +209,15 @@ class Ressources:
             
         with open("assets/config.xml", "w") as xml_file:
             Ressources.doc.writexml(xml_file)
+    @staticmethod
+    def del_save():
+        SavesParent = Ressources.doc.getElementsByTagName("saves")[0]
+        oldSaves = SavesParent.getElementsByTagName("save")
+        for anySave in oldSaves:
+            SavesParent.removeChild(anySave)
+        with open("assets/config.xml", "w") as xml_file:
+            Ressources.doc.writexml(xml_file)
+    @staticmethod 
     def getScores():
         Ressources.scores = Ressources.doc.getElementsByTagName("score")
         scores = []
@@ -222,6 +240,5 @@ class Ressources:
             scores.append(infos)
             
         Ressources.scores = scores
-    def getSave():
-        x = 0
+    
         

@@ -68,11 +68,15 @@ class ChooseMenu:
     def quit(self):
         Ressources.running = False
     def continue_(self):
-        x = 0
+        Ressources.mode = 1
+        self.clickSound.play()
+        Ressources.rend.blitOptions()
     def new_game(self):
         self.clickSound.play()
         Ressources.mode = 1
         Ressources.rend.genOptions()
         Ressources.rend.blitOptions()
+        Ressources.rend.bg.reset()
+        Ressources.played = []
     def statistics(self):
         x = 0
