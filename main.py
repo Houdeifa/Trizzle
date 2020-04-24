@@ -6,8 +6,18 @@ import modules.eventHandler as eventHandler
 pygame.mixer.pre_init(44100, -16, 2, 512)
 pygame.mixer.init()
 pygame.init()
-screenWidth = 500
-screenHeight = 500
+Ressources.readConfigFile()
+if(Ressources.configFileExists and Ressources.screenConf != []):
+    screenWidth = int(Ressources.screenConf[0].getAttribute("width"))
+    screenHeight = int(Ressources.screenConf[0].getAttribute("height"))
+    Ressources.getScores()
+    Ressources.getSave()
+else:
+    screenWidth = 500
+    screenHeight = 500
+    Ressources.maxScore = {"value" : "0", "date": "00000000"}
+    Ressources.minScore = {"value" : "0", "date": "00000000"}
+    Ressources.scores = []
 screen = pygame.display.set_mode([screenWidth, screenHeight])
 
 
@@ -23,7 +33,6 @@ mousePos = pygame.mouse.get_pos()
 Ressources.selectedGameObject = 0
 Ressources.mouseOffset = (0,0)
 Ressources.screen = screen
-
 
 while Ressources.running:
     mousePos = pygame.mouse.get_pos()

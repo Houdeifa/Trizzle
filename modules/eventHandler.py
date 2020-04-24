@@ -2,6 +2,7 @@ import pygame
 from modules.ressources import Ressources
 
 def eventHandel(events,rend,mousePos):
+    #choose Menus
     if(Ressources.mode == 0):
         for event in events.get():
             if event.type == pygame.QUIT:
@@ -24,7 +25,7 @@ def eventHandel(events,rend,mousePos):
                 rend.chsMenu.buttons[i][3] = 0
         if(mouseOver == False):
             Ressources.mouseOver = False
-            
+    #loose menu        
     elif(Ressources.mode == 2):
         for event in events.get():
             if event.type == pygame.QUIT:
@@ -34,7 +35,7 @@ def eventHandel(events,rend,mousePos):
                 for i in range(len(rend.lsMenu.buttons)):
                     if(rend.lsMenu.inButtonBox(mousePos,i)):
                         rend.lsMenu.buttons[i][6]()
-                        print("true")
+                        
         mouseOver = False
         for i in range(len(rend.lsMenu.buttons)):
             if(rend.lsMenu.inButtonBox(mousePos,i)):
@@ -47,10 +48,11 @@ def eventHandel(events,rend,mousePos):
                 rend.lsMenu.buttons[i][4] = 0
         if(mouseOver == False):
             Ressources.mouseOver = False
-    
+    #playing mode
     elif(Ressources.mode == 1):
         for event in events.get():
             if event.type == pygame.QUIT:
+                Ressources.save()
                 Ressources.running = False
                 return
             
@@ -84,3 +86,4 @@ def eventHandel(events,rend,mousePos):
         if(Lost):
             rend.lsMenu.reset()
             Ressources.mode = 2
+            Ressources.canContinue = False

@@ -24,10 +24,13 @@ class Form:
         self.colls = 0
         self.rows = 0
         self.score = 0
+        self.iPos = (-1,-1)
+        self.optimalSelectionPos = (0,0)
                     
     def boxesDefinition(self):
         types = Ressources.getGameObjectType(self.type)[0]
         self.score = Ressources.getGameObjectType(self.type)[2]
+        self.optimalSelectionPos = Ressources.getGameObjectType(self.type)[3]
         self.boxes = []
         for i in range(len(types)):
             if(type(types[i]) == list):
@@ -67,9 +70,10 @@ class Form:
         else:
             return False
         
-    def playTo(self,pos,v0):
+    def playTo(self,pos,v0,iPos):
         self.playing = True
         self.selected = False
+        self.iPos = iPos
         stepX = (pos[0] - self.pos[0])*v0
         stepY = (pos[1] - self.pos[1])*v0
         self.pos = (self.pos[0] + stepX , self.pos[1] + stepY)

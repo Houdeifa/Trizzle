@@ -1,4 +1,7 @@
 import pygame
+import xml.dom.minidom
+from datetime import date
+
 class Ressources:
     def __init__(self):
         Ressources.screenWidth = 0
@@ -38,7 +41,7 @@ class Ressources:
             pygame.image.load('assets/imgs/numbers/9.png').convert_alpha()
         ]
         self.getColoredUpAndDowns()
-        
+        Ressources.canContinue = False
     
     def getColoredUpAndDowns(self):
         greyUp = pygame.image.load('assets/up.png').convert_alpha()
@@ -79,23 +82,26 @@ class Ressources:
         Ressources.downs = [greenDown , yellowDown, orangeDown, cyonDown]
         Ressources.mouseOver = False
         Ressources.score = 0
+        Ressources.configFileExists = False
+        
+        
        
     @staticmethod
     def getGameObjectType(type):
         forms = {
-            1 : [[[1,0,1],[0,1,0]],(3*Ressources.trXSpace,2*Ressources.trYSpace),6],
-            2 :  [[[1,-1,-1],[0,1,0]],(3*Ressources.trXSpace,2*Ressources.trYSpace),6],
-            3 :  [[0,1,0],(3*Ressources.trXSpace,Ressources.trYSpace),3],
-            4 :  [[[0,1,-1],[-1,0,1]],(3*Ressources.trXSpace,2*Ressources.trYSpace),6],
-            5 :  [[[-1,1,0],[1,0,-1]],(3*Ressources.trXSpace,2*Ressources.trYSpace),6],
-            6 :  [[[-1,1],[1,0],[0,-1]],(2*Ressources.trXSpace,3*Ressources.trYSpace),6],
-            7 :  [[[1,-1],[0,1],[-1,0]],(2*Ressources.trXSpace,3*Ressources.trYSpace),6],
-            8 :  [[1,0,1],(3*Ressources.trXSpace,Ressources.trYSpace),3],
-            9 :  [[0,1],(2*Ressources.trXSpace,Ressources.trYSpace),2],
-            10 :  [[1,0],(2*Ressources.trXSpace,Ressources.trYSpace),2],
-            11 :  [[[1],[0]],(Ressources.trXSpace,2*Ressources.trYSpace),2],
-            12 :  [[0],(Ressources.trXSpace,Ressources.trYSpace),1],
-            13 :  [[1],(Ressources.trXSpace,Ressources.trYSpace),1],
+            1 : [[[1,0,1],[0,1,0]],(3*Ressources.trXSpace,2*Ressources.trYSpace),6,(0,0)],
+            2 :  [[[1,-1,-1],[0,1,0]],(3*Ressources.trXSpace,2*Ressources.trYSpace),6,(0,0)],
+            3 :  [[0,1,0],(3*Ressources.trXSpace,Ressources.trYSpace),3,(0,0)],
+            4 :  [[[0,1,-1],[-1,0,1]],(3*Ressources.trXSpace,2*Ressources.trYSpace),6,(0,0)],
+            5 :  [[[-1,1,0],[1,0,-1]],(3*Ressources.trXSpace,2*Ressources.trYSpace),6,(1,0)],
+            6 :  [[[-1,1],[1,0],[0,-1]],(2*Ressources.trXSpace,3*Ressources.trYSpace),6,(1,0)],
+            7 :  [[[1,-1],[0,1],[-1,0]],(2*Ressources.trXSpace,3*Ressources.trYSpace),6,(0,0)],
+            8 :  [[1,0,1],(3*Ressources.trXSpace,Ressources.trYSpace),3,(0,0)],
+            9 :  [[0,1],(2*Ressources.trXSpace,Ressources.trYSpace),2,(0,0)],
+            10 :  [[1,0],(2*Ressources.trXSpace,Ressources.trYSpace),2,(0,0)],
+            11 :  [[[1],[0]],(Ressources.trXSpace,2*Ressources.trYSpace),2,(0,0)],
+            12 :  [[0],(Ressources.trXSpace,Ressources.trYSpace),1,(0,0)],
+            13 :  [[1],(Ressources.trXSpace,Ressources.trYSpace),1,(0,0)],
         }
         return forms[type]
     
@@ -127,3 +133,95 @@ class Ressources:
         Ressources.animationIndex = 0
         Ressources.rend.reset()
         Ressources.score = 0
+    @staticmethod
+    def readConfigFile():
+        try:
+            doc = xml.dom.minidom.parse("assets/config.xml")
+            Ressources.doc = doc
+            Ressources.configFileExists = True
+            Ressources.saves = doc.getElementsByTagName("save")
+            Ressources.scores = doc.getElementsByTagName("score")
+            Ressources.screenConf = doc.getElementsByTagName("screen")
+            if(len(Ressources.saves) != 0):
+                Ressources.canContinue = True
+        except Exception:
+            Ressources.configFileExists = False
+    @staticmethod
+    def save(saveGame = True):
+        if(saveGame):
+            save = Ressources.doc.createElement("save")
+            for form in Ressources.played:
+                playedForm = Ressources.doc.createElement("playedForm")
+                playedForm.setAttribute("type", str(form.type))
+                playedForm.setAttribute("pos", str(form.pos))
+                playedForm.setAttribute("iPos", str(form.iPos))
+                playedForm.setAttribute("color", str(form.color))
+                for i in range(len(form.boxes)):
+                    if(type(form.boxes[0]) != list and form.boxes[i].destoyed):
+                        box = Ressources.doc.createElement("distroyedBox")
+                        box.setAttribute("pos", str((i,-1)))
+                        playedForm.appendChild(box)
+                    elif(type(form.boxes[0]) == list):
+                        for j in range(len(form.boxes[i])):
+                            if(form.boxes[i][j] != -1 and form.boxes[i][j].destoyed):
+                                box = Ressources.doc.createElement("distroyedBox")
+                                box.setAttribute("pos", str((j,i)))
+                                playedForm.appendChild(box)
+                save.appendChild(playedForm)
+                choices = Ressources.doc.createElement("choices")
+                for i in range(len(Ressources.rend.gameChoices)):
+                    choice = Ressources.doc.createElement("choice")
+                    choice.setAttribute("type", str(Ressources.rend.gameChoices[i].type))
+                    choice.setAttribute("color", str(Ressources.rend.gameChoices[i].color))
+                    choice.setAttribute("played", str(Ressources.rend.gameChoices[i].played))
+                    choices.appendChild(choice)
+                save.appendChild(choices)
+            SavesParent = Ressources.doc.getElementsByTagName("saves")[0]
+            oldSaves = SavesParent.getElementsByTagName("save")
+            for anySave in oldSaves:
+                SavesParent.removeChild(anySave)
+            SavesParent.appendChild(save)
+            
+            
+        if(Ressources.score > int(Ressources.minScore["value"])):
+            Ressources.scores.remove(Ressources.minScore)
+        
+            today = date.today()
+
+            # dd/mm/YY
+            d = today.strftime("%d%m%Y")
+            infos = {
+                "value" : Ressources.score,
+                "date" : d
+            }
+            Ressources.scores.append(infos)
+            Ressources.minScoreElement.setAttribute("value",str(Ressources.score))
+            Ressources.minScoreElement.setAttribute("date",str(d))
+            
+        with open("assets/config.xml", "w") as xml_file:
+            Ressources.doc.writexml(xml_file)
+    def getScores():
+        Ressources.scores = Ressources.doc.getElementsByTagName("score")
+        scores = []
+        maxx = Ressources.scores[0].getAttribute("value")
+        minn = maxx
+        for i in range(len(Ressources.scores)):
+            infos = {
+                "value" : Ressources.scores[i].getAttribute("value"),
+                "date" : Ressources.scores[i].getAttribute("date")
+            }
+            maxx = max(maxx, infos["value"])
+            minn = min(minn, infos["value"])
+            if(maxx == Ressources.scores[i].getAttribute("value")):
+                Ressources.maxScore = infos
+           
+            if(minn == Ressources.scores[i].getAttribute("value")):
+                Ressources.minScore = infos
+                Ressources.minScoreElement = Ressources.scores[i]
+                
+            scores.append(infos)
+            
+        Ressources.scores = scores
+    def getSave():
+        x = 0
+        

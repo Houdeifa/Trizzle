@@ -24,7 +24,8 @@ class Background:
         xPos = Ressources.screenWidth/2-self.width/2
         yPos = 2*Ressources.screenHeight/5-self.height/2
         self.pos = (xPos,yPos)
-        self.scorePos = (Ressources.screenWidth - Ressources.screenWidth/10,Ressources.screenHeight/20)
+        self.scorePos = (Ressources.screenWidth - Ressources.screenWidth/20,Ressources.screenHeight/20)
+        self.bestScorePos = (Ressources.screenWidth/20,Ressources.screenHeight/20)
         self.font = Ressources.fonts[1]
         self.PlayPosS = []
         
@@ -56,16 +57,25 @@ class Background:
                 if(Ressources.grid[j][i] != -1):
                     Ressources.grid[j][i].draw()
         self.drawOptionsSquare(Ressources.screenWidth - 20,150,10)
-        self.printscore()
+        self.print_score()
+        self.print_best_score()
         for form in Ressources.played:
             if(form.played and not form.destoyed):
                 form.draw()
             elif(form.destoyed):
                  Ressources.played.remove(form)
-    def printscore(self): 
+    def print_score(self): 
         color = (255,255,255)
         text = self.font.render(str(Ressources.score), True, color)
-        self.screen.blit(text,self.scorePos)
+        pos = self.scorePos
+        pos = (pos[0] - text.get_width(),pos[1])
+        self.screen.blit(text,pos)
+        
+    def print_best_score(self): 
+        color = (255,255,255)
+        text = self.font.render("BEST : " + str(Ressources.maxScore["value"]), True, color)
+        pos = self.bestScorePos
+        self.screen.blit(text,pos)
         
     def drawOptionsSquare(self,width,height,margins):
         #drawing the square where Object are generated
@@ -132,7 +142,7 @@ class Background:
                         Ressources.grid[yg][dleft+j].occupied = True
                 xg = xg - xf
                 pos = (xg * Ressources.trXSpace + self.pos[0],yg * Ressources.trYSpace + self.pos[1])
-                form.playTo(pos,0.1)
+                form.playTo(pos,0.1,(xg,yg))
                 Ressources.played.append(form)
             return True
         else:
@@ -164,7 +174,7 @@ class Background:
                 xg = xg - xf 
                 yg = yg - yf 
                 pos = (xg * Ressources.trXSpace+ self.pos[0],yg * Ressources.trYSpace + self.pos[1])
-                form.playTo(pos,0.1)
+                form.playTo(pos,0.1,(xg,yg))
                 Ressources.played.append(form)
             return True
     
@@ -175,7 +185,7 @@ class Background:
         for i in range(self.rows):
             for j in range(self.colls):
                 if(Ressources.grid[i][j] != -1):
-                    Ressources.selectedTr = (0,0)
+                    Ressources.selectedTr = form.optimalSelectionPos
                     if(type(form.boxes[0]) != list):
                         Ressources.selectedTr = (0,-1)
                     Ressources.selectedBgTr = (j,i)

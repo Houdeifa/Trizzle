@@ -21,6 +21,8 @@ class Render(Ressources):
         M = 11
         self.bg = Background(self.screen,N,M)
         self.chsMenu = ChooseMenu()
+        if(Ressources.canContinue):
+            self.chsMenu.buttons[0][4] = 0
         self.lsMenu = LooseMenu()
         Ressources.rend = self
         for i in range(N):
@@ -121,7 +123,7 @@ class Render(Ressources):
                     
         for i in range(len(Ressources.played)):
             if(Ressources.played[i].playing):
-                Ressources.played[i].playTo(Ressources.played[i].PlayedPos,0.07)
+                Ressources.played[i].playTo(Ressources.played[i].PlayedPos,0.07,Ressources.played[i].iPos)
                 
         self.bg.DestAnimation()
     

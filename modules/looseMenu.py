@@ -76,6 +76,8 @@ class LooseMenu:
             return True    
     def animation(self):
         if(self.first):
+            if(Ressources.score > int(Ressources.maxScore["value"])):
+                 Ressources.maxScore["value"] = str(Ressources.score)
             self.soundFailure.play()
             temp = pygame.Surface((self.scWidth, self.scHeight)).convert()
             temp.blit(self.screen, (0, 0))
@@ -110,4 +112,5 @@ class LooseMenu:
     def reset(self):
         self.first = True
         self.i = 0
+        
         

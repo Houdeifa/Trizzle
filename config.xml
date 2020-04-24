@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+	<screen width = "500" height="500"/>
+	<saves>
+	</saves>
+	<scores>
+		<score date="00000000" value="0"/>
+		<score date="00000000" value="0"/>
+		<score date="00000000" value="0"/>
+		<score date="00000000" value="0"/>
+		<score date="00000000" value="0"/>
+		<score date="00000000" value="0"/>
+		<score date="00000000" value="0"/>
+		<score date="00000000" value="0"/>
+		<score date="00000000" value="0"/>
+		<score date="00000000" value="0"/>
+	</scores>
+</configuration>
