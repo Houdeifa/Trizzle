@@ -9,6 +9,7 @@ pygame.init()
 Ressources.configFileExists = False
 Ressources.canContinue = False
 Ressources.readConfigFile()
+Ressources.yearOffset = 2020
 if(Ressources.configFileExists and Ressources.screenConf != []):
     screenWidth = int(Ressources.screenConf[0].getAttribute("width"))
     screenHeight = int(Ressources.screenConf[0].getAttribute("height"))
@@ -62,4 +63,6 @@ while Ressources.running:
         rend.animations()
     if(Ressources.mode == 2):
         rend.lsMenu.draw()
+    if(Ressources.mode == 3):
+        rend.scoreMenu.draw()
 pygame.quit()

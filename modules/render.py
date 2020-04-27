@@ -6,6 +6,7 @@ from modules.background import Background
 from modules.ressources import Ressources
 from modules.chooseMenu import ChooseMenu
 from modules.looseMenu import LooseMenu
+from modules.scoresMenu import ScoresMenu
 
 class Render(Ressources):
     black = (0,0,0)
@@ -14,6 +15,12 @@ class Render(Ressources):
         Ressources.screenWidth = width
         Ressources.screenHeight = height
         Ressources.screen = screen
+        
+        Ressources.fonts = [
+            pygame.font.Font("assets/fonts/BebasNeue-Regular.ttf", width // 20),
+            pygame.font.Font("assets/fonts/3X5_____.TTF", width // 20),
+            pygame.font.Font("assets/fonts/BebasNeue-Regular.ttf", width // 30)
+        ]
         self.Offsets = []
         self.gameChoices = []
         N = 6
@@ -21,6 +28,7 @@ class Render(Ressources):
         self.bg = Background(self.screen,N,M)
         self.chsMenu = ChooseMenu()
         self.lsMenu = LooseMenu()
+        self.scoreMenu = ScoresMenu()
         Ressources.rend = self
         for i in range(N):
             tmp = []

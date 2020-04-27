@@ -6,6 +6,7 @@ def eventHandel(events,rend,mousePos):
     if(Ressources.mode == 0):
         for event in events.get():
             if event.type == pygame.QUIT:
+                Ressources.save(False)
                 Ressources.running = False
                 return
             elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -29,6 +30,7 @@ def eventHandel(events,rend,mousePos):
     elif(Ressources.mode == 2):
         for event in events.get():
             if event.type == pygame.QUIT:
+                Ressources.save(False)
                 Ressources.running = False
                 return
             elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -89,3 +91,29 @@ def eventHandel(events,rend,mousePos):
             Ressources.canContinue = False
             Ressources.del_save()
             rend.chsMenu.buttons[0][3] = 1
+    #scores
+    elif(Ressources.mode == 3):
+        for event in events.get():
+            if event.type == pygame.QUIT:
+                Ressources.save(False)
+                Ressources.running = False
+                return
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                for i in range(len(rend.scoreMenu.tabs)):
+                    if(rend.scoreMenu.inTabBox(mousePos,i)):
+                        rend.scoreMenu.tabs[i][2]()
+                if(rend.scoreMenu.inButtonBox(mousePos)):
+                    Ressources.mode = 0
+            
+        #mouseOver Tests
+        for i in range(len(rend.scoreMenu.tabs)):
+            if(rend.scoreMenu.inTabBox(mousePos,i)):
+                rend.scoreMenu.tabs[i][0] = 1
+                mouseOver = True
+            else:
+                rend.scoreMenu.tabs[i][0] = rend.scoreMenu.tabs[i][3]
+        
+        if(rend.scoreMenu.inButtonBox(mousePos)):
+            rend.scoreMenu.buttonState = 1
+        else:
+            rend.scoreMenu.buttonState = 0

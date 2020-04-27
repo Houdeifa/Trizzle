@@ -14,16 +14,13 @@ class Ressources:
         Ressources.selectedBgTr = (-1,-1)
         Ressources.selectedGameObject = 0
         Ressources.played = []
+        Ressources.anneeOffset = 2020
         Ressources.gridForms = []
         Ressources.lineToDestroy = [[],[],[]] #cobtains all lines that will be destroyed after cheking all possibilitys
         Ressources.kOfEveryRow = []
         Ressources.mouseOffset = (0,0)
         Ressources.animationIndex = 0
         Ressources.mode = 0
-        Ressources.fonts = [
-            pygame.font.Font("assets/fonts/BebasNeue-Regular.ttf", 28),
-            pygame.font.Font("assets/fonts/3X5_____.TTF", 28)
-        ]
         Ressources.canPlay = True
         Ressources.playedSound = pygame.mixer.Sound("assets/sounds/played.wav")
         Ressources.returnedSound = pygame.mixer.Sound("assets/sounds/returned.wav")
@@ -191,14 +188,21 @@ class Ressources:
             if(len(Ressources.played) != 0):
                 SavesParent.appendChild(save)
             
-            
+        Lastests = Ressources.doc.getElementsByTagName("latest")
+        Lastests.remove(Lastests[0])
+        today = date.today()
+        # dd/mm/YY
+        d = today.strftime("%d%m%Y")
+        last = Ressources.doc.createElement("latest")
+        last.setAttribute("value",str(Ressources.score))
+        last.setAttribute("date",str(d))
+        LastestsParent = Ressources.doc.getElementsByTagName("latests")
+        LastestsParent[0].removeChild(Lastests[0])
+        LastestsParent[0].appendChild(last)
         if(Ressources.score > int(Ressources.minScore["value"])):
             Ressources.scores.remove(Ressources.minScore)
         
-            today = date.today()
-
-            # dd/mm/YY
-            d = today.strftime("%d%m%Y")
+            
             infos = {
                 "value" : Ressources.score,
                 "date" : d
@@ -221,24 +225,51 @@ class Ressources:
     def getScores():
         Ressources.scores = Ressources.doc.getElementsByTagName("score")
         scores = []
-        maxx = Ressources.scores[0].getAttribute("value")
+        maxx = int(Ressources.scores[0].getAttribute("value"))
         minn = maxx
         for i in range(len(Ressources.scores)):
             infos = {
-                "value" : Ressources.scores[i].getAttribute("value"),
+                "value" : int(Ressources.scores[i].getAttribute("value")),
                 "date" : Ressources.scores[i].getAttribute("date")
             }
+            print(infos["value"])
             maxx = max(maxx, infos["value"])
             minn = min(minn, infos["value"])
-            if(maxx == Ressources.scores[i].getAttribute("value")):
+            if(maxx == int(Ressources.scores[i].getAttribute("value"))):
                 Ressources.maxScore = infos
            
-            if(minn == Ressources.scores[i].getAttribute("value")):
+            if(minn == int(Ressources.scores[i].getAttribute("value"))):
                 Ressources.minScore = infos
                 Ressources.minScoreElement = Ressources.scores[i]
                 
             scores.append(infos)
             
         Ressources.scores = scores
+        Ressources.lastScores = Ressources.doc.getElementsByTagName("latest")
+        scores = []
+        for i in range(len(Ressources.scores)):
+            infos = {
+                "value" : int(Ressources.lastScores[i].getAttribute("value")),
+                "date" : Ressources.lastScores[i].getAttribute("date")
+            }
+            year = ""
+            mounth = ""
+            day = ""
+            for l in range(2):
+                day = day + infos["date"][l]
+            for l in range(2):
+                mounth = mounth + infos["date"][2+l]
+            for l in range(4):
+                year = year + infos["date"][4+l]
+            year = int(year)
+            mounth = int(mounth)
+            day = int(day)
+            infos["year"] = year
+            infos["mounth"] = mounth
+            infos["day"] = day
+            infos["duration"] = (year - Ressources.yearOffset)*12 + (mounth*30 + (day))
+            scores.append(infos)
+            
+        Ressources.lastScores = scores
     
         

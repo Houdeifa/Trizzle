@@ -24,7 +24,7 @@ class ChooseMenu:
         y = y + self.buttonHeight + 20
         pos = (x,y)
         limits = (x + self.buttonWidth,y + self.buttonHeight)
-        self.buttons.append([pos,"Statistics",limits,status,self.statistics])
+        self.buttons.append([pos,"Scores",limits,status,self.statistics])
         y = Ressources.screenHeight -  self.buttonHeight - 50
         pos = (x,y)
         limits = (x + self.buttonWidth,y + self.buttonHeight)
@@ -79,4 +79,4 @@ class ChooseMenu:
         Ressources.rend.bg.reset()
         Ressources.played = []
     def statistics(self):
-        x = 0
+        Ressources.mode = 3

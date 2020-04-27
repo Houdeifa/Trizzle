@@ -2,15 +2,27 @@
 	<screen height="500" width="500"/>
 	<saves/>
 	<scores>
-		<score date="24042020" value="8"/>
+		<score date="27042020" value="67"/>
 		<score date="24042020" value="58"/>
 		<score date="24042020" value="58"/>
 		<score date="24042020" value="162"/>
-		<score date="24042020" value="3"/>
+		<score date="27042020" value="57"/>
 		<score date="24042020" value="90"/>
-		<score date="24042020" value="6"/>
+		<score date="27042020" value="66"/>
 		<score date="24042020" value="58"/>
 		<score date="24042020" value="71"/>
-		<score date="24042020" value="6"/>
+		<score date="27042020" value="63"/>
 	</scores>
+	<latests>
+		<latest date="24042020" value="8"/>
+		
+		
+		<latest date="24042020" value="162"/>
+		<latest date="24042020" value="3"/>
+		<latest date="24042020" value="90"/>
+		<latest date="24042020" value="6"/>
+		<latest date="24042020" value="58"/>
+		<latest date="24042020" value="71"/>
+		<latest date="24042020" value="6"/>
+	<latest date="27042020" value="67"/><latest date="27042020" value="9"/></latests>
 </configuration>
