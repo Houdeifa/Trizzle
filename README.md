@@ -25,7 +25,7 @@ Pygame :
 ```
 http://www.montefiore.ulg.ac.be/~boigelot/cours/ppi/tuto-w10.pdf
 ```
-Windows Ubunto : \
+Ubunto Users : \
 Python3 :
 ```
 sudo apt intall python3
